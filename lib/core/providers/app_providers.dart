@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../data/models/dashboard_model.dart';
-import '../data/repositories/local_storage_repository.dart';
+import '../../data/models/dashboard_model.dart';
+import '../../data/repositories/local_storage_repository.dart';
 
 // Repository provider
 final localStorageProvider = Provider<LocalStorageRepository>((ref) {
