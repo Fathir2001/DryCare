@@ -7,6 +7,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/app_utils.dart';
 import '../../../shared/widgets/glass_card.dart';
 import '../../../shared/widgets/gradient_background.dart';
+import '../../../shared/widgets/smart_animated_footer.dart';
 import '../../settings/screens/settings_screen.dart';
 import '../../tips/screens/tips_screen.dart';
 
@@ -37,6 +38,24 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
     'Night moisturizer',
   ];
 
+  static const List<FooterItem> _footerItems = [
+    FooterItem(
+      icon: Icons.dashboard_outlined,
+      activeIcon: Icons.dashboard_rounded,
+      label: 'Dashboard',
+    ),
+    FooterItem(
+      icon: Icons.local_fire_department_outlined,
+      activeIcon: Icons.local_fire_department_rounded,
+      label: 'Tips',
+    ),
+    FooterItem(
+      icon: Icons.settings_outlined,
+      activeIcon: Icons.settings_rounded,
+      label: 'Settings',
+    ),
+  ];
+
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -49,32 +68,24 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
 
     return Scaffold(
       body: GradientBackground(
-        child: screens[_currentIndex],
-      ),
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          color: isDark ? AppColors.darkSurface : AppColors.lightCard,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.1),
-              blurRadius: 20,
-              offset: const Offset(0, -5),
-            ),
-          ],
-        ),
-        child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                _buildNavItem(Icons.dashboard_rounded, 'Dashboard', 0, isDark),
-                _buildNavItem(Icons.auto_stories_rounded, 'Tips', 1, isDark),
-                _buildNavItem(Icons.settings_rounded, 'Settings', 2, isDark),
-              ],
-            ),
+        child: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 300),
+          transitionBuilder: (child, animation) {
+            return FadeTransition(
+              opacity: animation,
+              child: child,
+            );
+          },
+          child: KeyedSubtree(
+            key: ValueKey(_currentIndex),
+            child: screens[_currentIndex],
           ),
         ),
+      ),
+      bottomNavigationBar: SmartAnimatedFooter(
+        currentIndex: _currentIndex,
+        items: _footerItems,
+        onTap: (index) => setState(() => _currentIndex = index),
       ),
     );
   }
@@ -129,6 +140,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
     final score = ref.watch(drynessScoreProvider);
     final level = AppUtils.getDrynessLevel(score);
     final levelColor = AppUtils.getDrynessColor(score);
+    final userName = ref.watch(userNameProvider);
+    final greeting = userName.isNotEmpty ? 'Hi, $userName! 👋' : 'Daily Care';
 
     return SafeArea(
       child: SingleChildScrollView(
@@ -143,19 +156,22 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Daily Care',
-                        style: Theme.of(context).textTheme.displayMedium,
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        AppUtils.formatDate(DateTime.now()),
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                    ],
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          greeting,
+                          style: Theme.of(context).textTheme.displayMedium,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          AppUtils.formatDate(DateTime.now()),
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                      ],
+                    ),
                   ),
                   // Streak badge
                   Container(
