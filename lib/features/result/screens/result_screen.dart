@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
+
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/app_utils.dart';
-import '../../../shared/widgets/gradient_background.dart';
 import '../../../shared/widgets/glass_card.dart';
+import '../../../shared/widgets/gradient_background.dart';
 import '../../../shared/widgets/gradient_button.dart';
 import '../../dashboard/screens/dashboard_screen.dart';
 
@@ -29,8 +30,8 @@ class _ResultScreenState extends State<ResultScreen>
       vsync: this,
       duration: const Duration(milliseconds: 1500),
     );
-    _scoreAnimation = Tween<double>(begin: 0, end: widget.score / 30)
-        .animate(CurvedAnimation(
+    _scoreAnimation =
+        Tween<double>(begin: 0, end: widget.score / 30).animate(CurvedAnimation(
       parent: _scoreAnimController,
       curve: Curves.easeOutCubic,
     ));
@@ -121,8 +122,8 @@ class _ResultScreenState extends State<ResultScreen>
                 Text(
                   level,
                   style: Theme.of(context).textTheme.displayMedium?.copyWith(
-                    color: color,
-                  ),
+                        color: color,
+                      ),
                 ),
                 const SizedBox(height: 8),
                 Icon(
@@ -160,9 +161,12 @@ class _ResultScreenState extends State<ResultScreen>
                             const SizedBox(height: 12),
                             Text(
                               explanation,
-                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                height: 1.6,
-                              ),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(
+                                    height: 1.6,
+                                  ),
                             ),
                           ],
                         ),
@@ -175,7 +179,8 @@ class _ResultScreenState extends State<ResultScreen>
                           children: [
                             Row(
                               children: [
-                                const Text('🧴', style: TextStyle(fontSize: 20)),
+                                const Text('🧴',
+                                    style: TextStyle(fontSize: 20)),
                                 const SizedBox(width: 8),
                                 Text(
                                   'Your Skincare Routine',
@@ -185,28 +190,29 @@ class _ResultScreenState extends State<ResultScreen>
                             ),
                             const SizedBox(height: 12),
                             ...routine.map((step) => Padding(
-                              padding: const EdgeInsets.only(bottom: 8),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Icon(
-                                    Icons.check_circle_rounded,
-                                    color: AppColors.coral,
-                                    size: 18,
+                                  padding: const EdgeInsets.only(bottom: 8),
+                                  child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Icon(
+                                        Icons.check_circle_rounded,
+                                        color: AppColors.coral,
+                                        size: 18,
+                                      ),
+                                      const SizedBox(width: 10),
+                                      Expanded(
+                                        child: Text(
+                                          step,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyMedium
+                                              ?.copyWith(height: 1.5),
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                  const SizedBox(width: 10),
-                                  Expanded(
-                                    child: Text(
-                                      step,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyMedium
-                                          ?.copyWith(height: 1.5),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            )),
+                                )),
                           ],
                         ),
                       ),
@@ -218,7 +224,8 @@ class _ResultScreenState extends State<ResultScreen>
                           children: [
                             Row(
                               children: [
-                                const Text('💧', style: TextStyle(fontSize: 20)),
+                                const Text('💧',
+                                    style: TextStyle(fontSize: 20)),
                                 const SizedBox(width: 8),
                                 Text(
                                   'Hydration Tips',
@@ -228,28 +235,29 @@ class _ResultScreenState extends State<ResultScreen>
                             ),
                             const SizedBox(height: 12),
                             ...hydration.map((tip) => Padding(
-                              padding: const EdgeInsets.only(bottom: 8),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Icon(
-                                    Icons.water_drop_rounded,
-                                    color: Colors.lightBlueAccent,
-                                    size: 18,
+                                  padding: const EdgeInsets.only(bottom: 8),
+                                  child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Icon(
+                                        Icons.water_drop_rounded,
+                                        color: Colors.lightBlueAccent,
+                                        size: 18,
+                                      ),
+                                      const SizedBox(width: 10),
+                                      Expanded(
+                                        child: Text(
+                                          tip,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyMedium
+                                              ?.copyWith(height: 1.5),
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                  const SizedBox(width: 10),
-                                  Expanded(
-                                    child: Text(
-                                      tip,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyMedium
-                                          ?.copyWith(height: 1.5),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            )),
+                                )),
                           ],
                         ),
                       ),
@@ -260,9 +268,12 @@ class _ResultScreenState extends State<ResultScreen>
                         child: Center(
                           child: Text(
                             motivation,
-                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                              height: 1.6,
-                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleMedium
+                                ?.copyWith(
+                                  height: 1.6,
+                                ),
                             textAlign: TextAlign.center,
                           ),
                         ),
@@ -281,8 +292,7 @@ class _ResultScreenState extends State<ResultScreen>
                               PageRouteBuilder(
                                 pageBuilder: (_, __, ___) =>
                                     const DashboardScreen(),
-                                transitionsBuilder:
-                                    (_, animation, __, child) {
+                                transitionsBuilder: (_, animation, __, child) {
                                   return FadeTransition(
                                     opacity: animation,
                                     child: child,

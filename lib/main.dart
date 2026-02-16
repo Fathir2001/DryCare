@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'core/theme/app_theme.dart';
+
 import 'core/providers/app_providers.dart';
+import 'core/theme/app_theme.dart';
 import 'data/repositories/local_storage_repository.dart';
+import 'features/dashboard/screens/dashboard_screen.dart';
 import 'features/onboarding/screens/onboarding_screen.dart';
 import 'features/questionnaire/screens/questionnaire_screen.dart';
-import 'features/dashboard/screens/dashboard_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../../core/theme/app_colors.dart';
 import '../../../data/datasources/tips_datasource.dart';
 import '../../../data/models/tip_article.dart';
@@ -51,8 +52,7 @@ class TipsScreen extends StatelessWidget {
       onTap: () {
         Navigator.of(context).push(
           PageRouteBuilder(
-            pageBuilder: (_, __, ___) =>
-                TipDetailScreen(article: article),
+            pageBuilder: (_, __, ___) => TipDetailScreen(article: article),
             transitionsBuilder: (_, animation, __, child) {
               return SlideTransition(
                 position: Tween<Offset>(
@@ -106,8 +106,8 @@ class TipsScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 6),
                 Container(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 8, vertical: 3),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                   decoration: BoxDecoration(
                     color: AppColors.coral.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(8),
@@ -126,7 +126,8 @@ class TipsScreen extends StatelessWidget {
           ),
           Icon(
             Icons.chevron_right_rounded,
-            color: isDark ? AppColors.textSecondary : AppColors.lightTextSecondary,
+            color:
+                isDark ? AppColors.textSecondary : AppColors.lightTextSecondary,
           ),
         ],
       ),
@@ -269,8 +270,8 @@ class TipDetailScreen extends StatelessWidget {
             child: Text(
               trimmed.replaceAll('**', ''),
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                color: AppColors.coral,
-              ),
+                    color: AppColors.coral,
+                  ),
             ),
           );
         }
@@ -298,8 +299,8 @@ class TipDetailScreen extends StatelessWidget {
                       child: Text(
                         lineTrimmed.substring(1).trim(),
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          height: 1.5,
-                        ),
+                              height: 1.5,
+                            ),
                       ),
                     ),
                   ],
@@ -312,8 +313,8 @@ class TipDetailScreen extends StatelessWidget {
                 child: Text(
                   lineTrimmed.replaceAll('**', ''),
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: AppColors.coral,
-                  ),
+                        color: AppColors.coral,
+                      ),
                 ),
               );
             }
@@ -322,8 +323,8 @@ class TipDetailScreen extends StatelessWidget {
               child: Text(
                 lineTrimmed,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  height: 1.6,
-                ),
+                      height: 1.6,
+                    ),
               ),
             );
           }).toList(),

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../core/theme/app_colors.dart';
+
 import '../../../core/constants/app_constants.dart';
 import '../../../core/providers/app_providers.dart';
+import '../../../core/theme/app_colors.dart';
 import '../../../shared/widgets/glass_card.dart';
 import '../../onboarding/screens/onboarding_screen.dart';
 
@@ -55,7 +56,9 @@ class SettingsScreen extends ConsumerWidget {
                       ),
                     ),
                     child: Icon(
-                      isDark ? Icons.dark_mode_rounded : Icons.light_mode_rounded,
+                      isDark
+                          ? Icons.dark_mode_rounded
+                          : Icons.light_mode_rounded,
                       color: AppColors.coral,
                       size: 22,
                     ),
@@ -277,22 +280,22 @@ class SettingsScreen extends ConsumerWidget {
                   Text(
                     '${AppConstants.appName} – ${AppConstants.appTagline}',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      fontSize: 13,
-                    ),
+                          fontSize: 13,
+                        ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     'Version ${AppConstants.appVersion}',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      fontSize: 12,
-                    ),
+                          fontSize: 12,
+                        ),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     'Made with ❤️ for your skin',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      fontSize: 12,
-                    ),
+                          fontSize: 12,
+                        ),
                   ),
                 ],
               ),
@@ -479,8 +482,8 @@ class SettingsScreen extends ConsumerWidget {
                 child: Text(
                   content,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    height: 1.7,
-                  ),
+                        height: 1.7,
+                      ),
                 ),
               ),
             ),

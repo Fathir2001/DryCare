@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
+
+import '../../../core/providers/app_providers.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/app_utils.dart';
-import '../../../core/providers/app_providers.dart';
-import '../../../shared/widgets/gradient_background.dart';
 import '../../../shared/widgets/glass_card.dart';
-import '../../tips/screens/tips_screen.dart';
+import '../../../shared/widgets/gradient_background.dart';
 import '../../settings/screens/settings_screen.dart';
+import '../../tips/screens/tips_screen.dart';
 
 class DashboardScreen extends ConsumerStatefulWidget {
   const DashboardScreen({super.key});
@@ -78,8 +79,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
     );
   }
 
-  Widget _buildNavItem(
-      IconData icon, String label, int index, bool isDark) {
+  Widget _buildNavItem(IconData icon, String label, int index, bool isDark) {
     final isSelected = _currentIndex == index;
     return GestureDetector(
       onTap: () => setState(() => _currentIndex = index),
@@ -100,7 +100,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
               icon,
               color: isSelected
                   ? AppColors.coral
-                  : (isDark ? AppColors.textSecondary : AppColors.lightTextSecondary),
+                  : (isDark
+                      ? AppColors.textSecondary
+                      : AppColors.lightTextSecondary),
               size: 24,
             ),
             const SizedBox(height: 4),
@@ -111,7 +113,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
                 fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
                 color: isSelected
                     ? AppColors.coral
-                    : (isDark ? AppColors.textSecondary : AppColors.lightTextSecondary),
+                    : (isDark
+                        ? AppColors.textSecondary
+                        : AppColors.lightTextSecondary),
               ),
             ),
           ],
@@ -155,8 +159,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
                   ),
                   // Streak badge
                   Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 8),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     decoration: BoxDecoration(
                       gradient: AppColors.coralGradient,
                       borderRadius: BorderRadius.circular(20),
@@ -296,7 +300,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
                                 ? Colors.lightBlueAccent
                                 : (isDark
                                     ? Colors.white.withValues(alpha: 0.15)
-                                    : AppColors.deepPurple.withValues(alpha: 0.15)),
+                                    : AppColors.deepPurple
+                                        .withValues(alpha: 0.15)),
                             size: 28,
                           ),
                         ),
@@ -309,7 +314,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
                     children: [
                       _buildWaterButton(
                         Icons.remove_rounded,
-                        () => ref.read(dashboardProvider.notifier).removeWater(),
+                        () =>
+                            ref.read(dashboardProvider.notifier).removeWater(),
                         isDark,
                       ),
                       const SizedBox(width: 24),
@@ -357,8 +363,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
     );
   }
 
-  Widget _buildWaterButton(
-      IconData icon, VoidCallback onTap, bool isDark) {
+  Widget _buildWaterButton(IconData icon, VoidCallback onTap, bool isDark) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -446,7 +451,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
                               ? AppColors.mildGreen
                               : (isDark
                                   ? Colors.white.withValues(alpha: 0.2)
-                                  : AppColors.deepPurple.withValues(alpha: 0.2)),
+                                  : AppColors.deepPurple
+                                      .withValues(alpha: 0.2)),
                           width: 2,
                         ),
                         color: isChecked
@@ -464,13 +470,14 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
                         items[i],
                         style: TextStyle(
                           fontSize: 15,
-                          decoration: isChecked
-                              ? TextDecoration.lineThrough
-                              : null,
+                          decoration:
+                              isChecked ? TextDecoration.lineThrough : null,
                           color: isChecked
                               ? (isDark
-                                  ? AppColors.textSecondary.withValues(alpha: 0.5)
-                                  : AppColors.lightTextSecondary.withValues(alpha: 0.5))
+                                  ? AppColors.textSecondary
+                                      .withValues(alpha: 0.5)
+                                  : AppColors.lightTextSecondary
+                                      .withValues(alpha: 0.5))
                               : (isDark
                                   ? AppColors.textPrimary
                                   : AppColors.lightTextPrimary),
