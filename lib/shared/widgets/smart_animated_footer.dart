@@ -74,9 +74,7 @@ class _SmartAnimatedFooterState extends State<SmartAnimatedFooter>
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final barColor = isDark
-        ? const Color(0xFF1E1230)
-        : const Color(0xFFF5F0F8);
+    final barColor = isDark ? const Color(0xFF1E1230) : const Color(0xFFF5F0F8);
     final shadowColor = isDark
         ? Colors.black.withValues(alpha: 0.5)
         : AppColors.deepPurple.withValues(alpha: 0.12);
@@ -280,13 +278,13 @@ class _WaveNavPainter extends CustomPainter {
 
     // Wave notch (cubic bézier curves)
     path.cubicTo(
-      notchCenter - notchRadius + 6, notchDepth,  // control 1
-      notchCenter - notchRadius + 4, 0,            // control 2
-      notchCenter, 0,                               // end
+      notchCenter - notchRadius + 6, notchDepth, // control 1
+      notchCenter - notchRadius + 4, 0, // control 2
+      notchCenter, 0, // end
     );
     path.cubicTo(
-      notchCenter + notchRadius - 4, 0,            // control 1
-      notchCenter + notchRadius - 6, notchDepth,   // control 2
+      notchCenter + notchRadius - 4, 0, // control 1
+      notchCenter + notchRadius - 6, notchDepth, // control 2
       (notchCenter + notchRadius + 14).clamp(0, size.width), notchDepth, // end
     );
 
@@ -313,14 +311,20 @@ class _WaveNavPainter extends CustomPainter {
     borderPath.moveTo(0, notchDepth);
     borderPath.lineTo(leftStart.clamp(0, size.width), notchDepth);
     borderPath.cubicTo(
-      notchCenter - notchRadius + 6, notchDepth,
-      notchCenter - notchRadius + 4, 0,
-      notchCenter, 0,
+      notchCenter - notchRadius + 6,
+      notchDepth,
+      notchCenter - notchRadius + 4,
+      0,
+      notchCenter,
+      0,
     );
     borderPath.cubicTo(
-      notchCenter + notchRadius - 4, 0,
-      notchCenter + notchRadius - 6, notchDepth,
-      (notchCenter + notchRadius + 14).clamp(0, size.width), notchDepth,
+      notchCenter + notchRadius - 4,
+      0,
+      notchCenter + notchRadius - 6,
+      notchDepth,
+      (notchCenter + notchRadius + 14).clamp(0, size.width),
+      notchDepth,
     );
     borderPath.lineTo(size.width, notchDepth);
     canvas.drawPath(borderPath, borderPaint);

@@ -125,3 +125,14 @@ final reminderProvider = StateProvider<bool>((ref) {
   final repo = ref.read(localStorageProvider);
   return repo.isReminderEnabled;
 });
+
+// User profile providers
+final userNameProvider = StateProvider<String>((ref) {
+  final repo = ref.read(localStorageProvider);
+  return repo.userName;
+});
+
+final userAgeProvider = StateProvider<int>((ref) {
+  final repo = ref.read(localStorageProvider);
+  return repo.userAge;
+});

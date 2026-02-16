@@ -138,6 +138,18 @@ class LocalStorageRepository {
     await _settingsBox.put(AppConstants.reminderEnabled, value);
   }
 
+  // User profile
+  String get userName =>
+      _userBox.get(AppConstants.userName, defaultValue: '');
+
+  int get userAge =>
+      _userBox.get(AppConstants.userAge, defaultValue: 0);
+
+  Future<void> saveUserProfile(String name, int age) async {
+    await _userBox.put(AppConstants.userName, name);
+    await _userBox.put(AppConstants.userAge, age);
+  }
+
   // Reset all data
   Future<void> resetAllData() async {
     await _userBox.clear();

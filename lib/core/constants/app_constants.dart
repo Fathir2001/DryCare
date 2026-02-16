@@ -24,6 +24,8 @@ class AppConstants {
   static const String lastActiveDate = 'last_active_date';
   static const String isDarkMode = 'is_dark_mode';
   static const String reminderEnabled = 'reminder_enabled';
+  static const String userName = 'user_name';
+  static const String userAge = 'user_age';
 
   // Scoring
   static const int maxScore = 30;
