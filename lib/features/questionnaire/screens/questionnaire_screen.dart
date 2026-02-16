@@ -363,8 +363,7 @@ class _QuestionnaireScreenState extends ConsumerState<QuestionnaireScreen>
                     children: [
                       Text(
                         'Before we begin...',
-                        style:
-                            Theme.of(context).textTheme.displayMedium,
+                        style: Theme.of(context).textTheme.displayMedium,
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 8),
@@ -401,8 +400,8 @@ class _QuestionnaireScreenState extends ConsumerState<QuestionnaireScreen>
                   child: GlassCard(
                     margin: EdgeInsets.zero,
                     borderRadius: 20,
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 20, vertical: 8),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                     child: TextFormField(
                       controller: _nameController,
                       textCapitalization: TextCapitalization.words,
@@ -422,8 +421,7 @@ class _QuestionnaireScreenState extends ConsumerState<QuestionnaireScreen>
                         hintText: 'e.g. Sarah',
                         hintStyle: TextStyle(
                           color: isDark
-                              ? AppColors.textSecondary
-                                  .withValues(alpha: 0.4)
+                              ? AppColors.textSecondary.withValues(alpha: 0.4)
                               : AppColors.lightTextSecondary
                                   .withValues(alpha: 0.4),
                         ),
@@ -463,8 +461,8 @@ class _QuestionnaireScreenState extends ConsumerState<QuestionnaireScreen>
                   child: GlassCard(
                     margin: EdgeInsets.zero,
                     borderRadius: 20,
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 20, vertical: 8),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                     child: TextFormField(
                       controller: _ageController,
                       keyboardType: TextInputType.number,
@@ -488,8 +486,7 @@ class _QuestionnaireScreenState extends ConsumerState<QuestionnaireScreen>
                         hintText: 'e.g. 25',
                         hintStyle: TextStyle(
                           color: isDark
-                              ? AppColors.textSecondary
-                                  .withValues(alpha: 0.4)
+                              ? AppColors.textSecondary.withValues(alpha: 0.4)
                               : AppColors.lightTextSecondary
                                   .withValues(alpha: 0.4),
                         ),
