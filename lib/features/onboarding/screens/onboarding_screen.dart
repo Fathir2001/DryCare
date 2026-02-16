@@ -111,9 +111,15 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
         PageRouteBuilder(
           pageBuilder: (_, __, ___) => const QuestionnaireScreen(),
           transitionsBuilder: (_, animation, __, child) {
-            return FadeTransition(opacity: animation, child: child);
+            return ScaleTransition(
+              scale: Tween<double>(begin: 0.85, end: 1.0).animate(
+                CurvedAnimation(
+                    parent: animation, curve: Curves.easeOutBack),
+              ),
+              child: FadeTransition(opacity: animation, child: child),
+            );
           },
-          transitionDuration: const Duration(milliseconds: 500),
+          transitionDuration: const Duration(milliseconds: 600),
         ),
       );
     }

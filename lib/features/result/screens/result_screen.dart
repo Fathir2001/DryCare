@@ -293,13 +293,22 @@ class _ResultScreenState extends State<ResultScreen>
                                 pageBuilder: (_, __, ___) =>
                                     const DashboardScreen(),
                                 transitionsBuilder: (_, animation, __, child) {
-                                  return FadeTransition(
-                                    opacity: animation,
-                                    child: child,
+                                  return SlideTransition(
+                                    position: Tween<Offset>(
+                                      begin: const Offset(0, 0.15),
+                                      end: Offset.zero,
+                                    ).animate(CurvedAnimation(
+                                      parent: animation,
+                                      curve: Curves.easeOutCubic,
+                                    )),
+                                    child: FadeTransition(
+                                      opacity: animation,
+                                      child: child,
+                                    ),
                                   );
                                 },
                                 transitionDuration:
-                                    const Duration(milliseconds: 500),
+                                    const Duration(milliseconds: 600),
                               ),
                               (route) => false,
                             );
