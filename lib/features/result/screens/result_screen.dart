@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 
+import '../../../core/providers/app_providers.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/app_utils.dart';
 import '../../../shared/widgets/glass_card.dart';
@@ -8,16 +10,16 @@ import '../../../shared/widgets/gradient_background.dart';
 import '../../../shared/widgets/gradient_button.dart';
 import '../../dashboard/screens/dashboard_screen.dart';
 
-class ResultScreen extends StatefulWidget {
+class ResultScreen extends ConsumerStatefulWidget {
   final int score;
 
   const ResultScreen({super.key, required this.score});
 
   @override
-  State<ResultScreen> createState() => _ResultScreenState();
+  ConsumerState<ResultScreen> createState() => _ResultScreenState();
 }
 
-class _ResultScreenState extends State<ResultScreen>
+class _ResultScreenState extends ConsumerState<ResultScreen>
     with TickerProviderStateMixin {
   late AnimationController _scoreAnimController;
   late Animation<double> _scoreAnimation;
@@ -66,6 +68,10 @@ class _ResultScreenState extends State<ResultScreen>
     final motivation = AppUtils.getMotivationalMessage(widget.score);
     final routine = AppUtils.getSkincareRoutine(widget.score);
     final hydration = AppUtils.getHydrationAdvice(widget.score);
+    final userName = ref.watch(userNameProvider);
+    final personalTitle = userName.isNotEmpty
+        ? '$userName, your skin is:'
+        : 'Your skin dryness level:';
 
     return Scaffold(
       body: GradientBackground(
@@ -117,6 +123,16 @@ class _ResultScreenState extends State<ResultScreen>
                   },
                 ),
                 const SizedBox(height: 24),
+
+                // Personalized title
+                Text(
+                  personalTitle,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontSize: 16,
+                      ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 8),
 
                 // Level title
                 Text(

@@ -22,6 +22,12 @@ class QuestionnaireScreen extends ConsumerStatefulWidget {
 
 class _QuestionnaireScreenState extends ConsumerState<QuestionnaireScreen>
     with TickerProviderStateMixin {
+  // ── Profile step ──
+  bool _showIntro = true;
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _ageController = TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
   int _currentQuestion = 0;
   final List<int> _answers = List.filled(10, -1);
   bool _showFunFact = false;
@@ -142,6 +148,8 @@ class _QuestionnaireScreenState extends ConsumerState<QuestionnaireScreen>
 
   @override
   void dispose() {
+    _nameController.dispose();
+    _ageController.dispose();
     _iconController.dispose();
     _textController.dispose();
     _optionsController.dispose();
@@ -269,12 +277,272 @@ class _QuestionnaireScreenState extends ConsumerState<QuestionnaireScreen>
   }
 
   // ═══════════════════════════════════════════════════════
+  //  INTRO PROFILE STEP
+  // ═══════════════════════════════════════════════════════
+  Future<void> _submitProfile() async {
+    if (!_formKey.currentState!.validate()) return;
+    HapticFeedback.mediumImpact();
+
+    final name = _nameController.text.trim();
+    final age = int.tryParse(_ageController.text.trim()) ?? 0;
+
+    final repo = ref.read(localStorageProvider);
+    await repo.saveUserProfile(name, age);
+    ref.read(userNameProvider.notifier).state = name;
+    ref.read(userAgeProvider.notifier).state = age;
+
+    if (mounted) {
+      setState(() => _showIntro = false);
+      _playEntryAnimations();
+    }
+  }
+
+  Widget _buildIntroScreen(bool isDark) {
+    return GradientBackground(
+      child: SafeArea(
+        child: SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
+          padding: const EdgeInsets.symmetric(horizontal: 28),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              children: [
+                const SizedBox(height: 40),
+                // Hero emoji
+                TweenAnimationBuilder<double>(
+                  tween: Tween(begin: 0.0, end: 1.0),
+                  duration: const Duration(milliseconds: 800),
+                  curve: Curves.easeOutBack,
+                  builder: (context, value, child) {
+                    return Transform.scale(
+                      scale: value,
+                      child: child,
+                    );
+                  },
+                  child: Container(
+                    width: 110,
+                    height: 110,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: LinearGradient(
+                        colors: [
+                          AppColors.deepPurple.withValues(alpha: 0.25),
+                          AppColors.dustyRose.withValues(alpha: 0.2),
+                        ],
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.deepPurple.withValues(alpha: 0.2),
+                          blurRadius: 24,
+                          spreadRadius: 4,
+                        ),
+                      ],
+                    ),
+                    child: const Center(
+                      child: Text('👋', style: TextStyle(fontSize: 52)),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 32),
+
+                // Title
+                TweenAnimationBuilder<double>(
+                  tween: Tween(begin: 0.0, end: 1.0),
+                  duration: const Duration(milliseconds: 700),
+                  curve: Curves.easeOut,
+                  builder: (context, value, child) {
+                    return Opacity(
+                      opacity: value,
+                      child: Transform.translate(
+                        offset: Offset(0, 20 * (1 - value)),
+                        child: child,
+                      ),
+                    );
+                  },
+                  child: Column(
+                    children: [
+                      Text(
+                        'Before we begin...',
+                        style:
+                            Theme.of(context).textTheme.displayMedium,
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Tell us a little about yourself so we can\npersonalize your experience ✨',
+                        style: TextStyle(
+                          fontSize: 15,
+                          color: isDark
+                              ? AppColors.textSecondary
+                              : AppColors.lightTextSecondary,
+                          height: 1.5,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 40),
+
+                // Name field
+                TweenAnimationBuilder<double>(
+                  tween: Tween(begin: 0.0, end: 1.0),
+                  duration: const Duration(milliseconds: 600),
+                  curve: Curves.easeOut,
+                  builder: (context, value, child) {
+                    return Opacity(
+                      opacity: value,
+                      child: Transform.translate(
+                        offset: Offset(0, 30 * (1 - value)),
+                        child: child,
+                      ),
+                    );
+                  },
+                  child: GlassCard(
+                    margin: EdgeInsets.zero,
+                    borderRadius: 20,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 8),
+                    child: TextFormField(
+                      controller: _nameController,
+                      textCapitalization: TextCapitalization.words,
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: isDark
+                            ? AppColors.textPrimary
+                            : AppColors.lightTextPrimary,
+                      ),
+                      decoration: InputDecoration(
+                        labelText: 'Your Name',
+                        labelStyle: TextStyle(
+                          color: isDark
+                              ? AppColors.textSecondary
+                              : AppColors.lightTextSecondary,
+                        ),
+                        hintText: 'e.g. Sarah',
+                        hintStyle: TextStyle(
+                          color: isDark
+                              ? AppColors.textSecondary
+                                  .withValues(alpha: 0.4)
+                              : AppColors.lightTextSecondary
+                                  .withValues(alpha: 0.4),
+                        ),
+                        prefixIcon: Icon(
+                          Icons.person_rounded,
+                          color: AppColors.coral,
+                        ),
+                        border: InputBorder.none,
+                        enabledBorder: InputBorder.none,
+                        focusedBorder: InputBorder.none,
+                      ),
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'Please enter your name';
+                        }
+                        return null;
+                      },
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+
+                // Age field
+                TweenAnimationBuilder<double>(
+                  tween: Tween(begin: 0.0, end: 1.0),
+                  duration: const Duration(milliseconds: 600),
+                  curve: Curves.easeOut,
+                  builder: (context, value, child) {
+                    return Opacity(
+                      opacity: value,
+                      child: Transform.translate(
+                        offset: Offset(0, 30 * (1 - value)),
+                        child: child,
+                      ),
+                    );
+                  },
+                  child: GlassCard(
+                    margin: EdgeInsets.zero,
+                    borderRadius: 20,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 8),
+                    child: TextFormField(
+                      controller: _ageController,
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.digitsOnly,
+                        LengthLimitingTextInputFormatter(3),
+                      ],
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: isDark
+                            ? AppColors.textPrimary
+                            : AppColors.lightTextPrimary,
+                      ),
+                      decoration: InputDecoration(
+                        labelText: 'Your Age',
+                        labelStyle: TextStyle(
+                          color: isDark
+                              ? AppColors.textSecondary
+                              : AppColors.lightTextSecondary,
+                        ),
+                        hintText: 'e.g. 25',
+                        hintStyle: TextStyle(
+                          color: isDark
+                              ? AppColors.textSecondary
+                                  .withValues(alpha: 0.4)
+                              : AppColors.lightTextSecondary
+                                  .withValues(alpha: 0.4),
+                        ),
+                        prefixIcon: Icon(
+                          Icons.cake_rounded,
+                          color: AppColors.softPeach,
+                        ),
+                        border: InputBorder.none,
+                        enabledBorder: InputBorder.none,
+                        focusedBorder: InputBorder.none,
+                      ),
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'Please enter your age';
+                        }
+                        final age = int.tryParse(value.trim());
+                        if (age == null || age < 5 || age > 120) {
+                          return 'Please enter a valid age';
+                        }
+                        return null;
+                      },
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 40),
+
+                // Continue button
+                GradientButton(
+                  text: 'Continue to Assessment 🌿',
+                  icon: Icons.arrow_forward_rounded,
+                  onPressed: _submitProfile,
+                ),
+                const SizedBox(height: 40),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // ═══════════════════════════════════════════════════════
   //  BUILD
   // ═══════════════════════════════════════════════════════
   @override
   Widget build(BuildContext context) {
-    final progress = (_currentQuestion + 1) / _questions.length;
     final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    if (_showIntro) {
+      return Scaffold(body: _buildIntroScreen(isDark));
+    }
+
+    final progress = (_currentQuestion + 1) / _questions.length;
     final accentColor = _accentColors[_currentQuestion];
 
     return Scaffold(
