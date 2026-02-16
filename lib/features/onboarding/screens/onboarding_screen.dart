@@ -113,8 +113,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
           transitionsBuilder: (_, animation, __, child) {
             return ScaleTransition(
               scale: Tween<double>(begin: 0.85, end: 1.0).animate(
-                CurvedAnimation(
-                    parent: animation, curve: Curves.easeOutBack),
+                CurvedAnimation(parent: animation, curve: Curves.easeOutBack),
               ),
               child: FadeTransition(opacity: animation, child: child),
             );

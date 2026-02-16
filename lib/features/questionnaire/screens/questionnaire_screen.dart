@@ -361,8 +361,7 @@ class _QuestionnaireScreenState extends ConsumerState<QuestionnaireScreen>
                 child: AnimatedBuilder(
                   animation: _transitionController,
                   builder: (context, child) {
-                    final scale =
-                        0.85 + (_transitionController.value * 0.15);
+                    final scale = 0.85 + (_transitionController.value * 0.15);
                     return Opacity(
                       opacity: _transitionController.value.clamp(0.0, 1.0),
                       child: Transform.scale(
@@ -546,8 +545,7 @@ class _QuestionnaireScreenState extends ConsumerState<QuestionnaireScreen>
                 ),
                 child: Row(
                   children: [
-                    Text('🧠',
-                        style: TextStyle(fontSize: 22)),
+                    Text('🧠', style: TextStyle(fontSize: 22)),
                     const SizedBox(width: 10),
                     Expanded(
                       child: Text(
@@ -634,9 +632,7 @@ class _QuestionnaireScreenState extends ConsumerState<QuestionnaireScreen>
                   duration: const Duration(milliseconds: 200),
                   child: isSelected
                       ? const Icon(Icons.check_rounded,
-                          key: ValueKey('check'),
-                          size: 18,
-                          color: Colors.white)
+                          key: ValueKey('check'), size: 18, color: Colors.white)
                       : Text(
                           labels[index],
                           key: ValueKey('label_$index'),
