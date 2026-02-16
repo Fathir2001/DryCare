@@ -206,26 +206,28 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
                                     ),
                                   )
                                 : Container(
-                              width: 120,
-                              height: 120,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                gradient: LinearGradient(
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                  colors: [
-                                    AppColors.deepPurple.withValues(alpha: 0.3),
-                                    AppColors.dustyRose.withValues(alpha: 0.3),
-                                  ],
-                                ),
-                              ),
-                              child: Center(
-                                child: Text(
-                                  page.emoji,
-                                  style: const TextStyle(fontSize: 56),
-                                ),
-                              ),
-                            ),
+                                    width: 120,
+                                    height: 120,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      gradient: LinearGradient(
+                                        begin: Alignment.topLeft,
+                                        end: Alignment.bottomRight,
+                                        colors: [
+                                          AppColors.deepPurple
+                                              .withValues(alpha: 0.3),
+                                          AppColors.dustyRose
+                                              .withValues(alpha: 0.3),
+                                        ],
+                                      ),
+                                    ),
+                                    child: Center(
+                                      child: Text(
+                                        page.emoji,
+                                        style: const TextStyle(fontSize: 56),
+                                      ),
+                                    ),
+                                  ),
                           ),
                           const SizedBox(height: 48),
 

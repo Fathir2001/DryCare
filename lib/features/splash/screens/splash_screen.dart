@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../../core/theme/app_colors.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -151,10 +152,10 @@ class _SplashScreenState extends State<SplashScreen>
                   Text(
                     'DryCare',
                     style: Theme.of(context).textTheme.displayLarge?.copyWith(
-                      color: AppColors.textPrimary,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: 1.5,
-                    ),
+                          color: AppColors.textPrimary,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 1.5,
+                        ),
                   ),
                   const SizedBox(height: 8),
                   Text(
