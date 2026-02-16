@@ -8,6 +8,7 @@ import 'data/repositories/local_storage_repository.dart';
 import 'features/dashboard/screens/dashboard_screen.dart';
 import 'features/onboarding/screens/onboarding_screen.dart';
 import 'features/questionnaire/screens/questionnaire_screen.dart';
+import 'features/splash/screens/splash_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -47,8 +48,17 @@ class DryCareApp extends ConsumerWidget {
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: themeMode,
-      home: const AppRouter(),
+      home: const SplashWrapper(),
     );
+  }
+}
+
+class SplashWrapper extends ConsumerWidget {
+  const SplashWrapper({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return SplashScreen(nextScreen: const AppRouter());
   }
 }
 

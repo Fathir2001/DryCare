@@ -180,7 +180,32 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
                                 ),
                               );
                             },
-                            child: Container(
+                            child: index == 0
+                                ? Container(
+                                    width: 140,
+                                    height: 140,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      gradient: LinearGradient(
+                                        begin: Alignment.topLeft,
+                                        end: Alignment.bottomRight,
+                                        colors: [
+                                          AppColors.deepPurple
+                                              .withValues(alpha: 0.3),
+                                          AppColors.dustyRose
+                                              .withValues(alpha: 0.3),
+                                        ],
+                                      ),
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(16),
+                                      child: Image.asset(
+                                        'assets/images/logo.png',
+                                        fit: BoxFit.contain,
+                                      ),
+                                    ),
+                                  )
+                                : Container(
                               width: 120,
                               height: 120,
                               decoration: BoxDecoration(
