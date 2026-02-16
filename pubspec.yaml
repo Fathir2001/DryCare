@@ -1,6 +1,6 @@
 name: drycare
 description: "DryCare – Dry Skin Face Care. Personalized dry skin care guide, hydration tracking, and daily skincare routine — fully offline."
-publish_to: 'none'
+publish_to: "none"
 version: 1.0.0+1
 
 environment:
@@ -29,7 +29,6 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
-
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
