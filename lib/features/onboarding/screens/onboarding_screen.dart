@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
-import '../../../core/theme/app_colors.dart';
+
 import '../../../core/providers/app_providers.dart';
+import '../../../core/theme/app_colors.dart';
 import '../../../shared/widgets/gradient_background.dart';
 import '../../../shared/widgets/gradient_button.dart';
 import '../../questionnaire/screens/questionnaire_screen.dart';
@@ -142,7 +143,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
                           child: Text(
                             'Skip',
                             style: TextStyle(
-                              color: Theme.of(context).brightness == Brightness.dark
+                              color: Theme.of(context).brightness ==
+                                      Brightness.dark
                                   ? AppColors.textSecondary
                                   : AppColors.lightTextSecondary,
                               fontSize: 16,
@@ -218,9 +220,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
                               children: [
                                 Text(
                                   page.title,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .displayMedium,
+                                  style:
+                                      Theme.of(context).textTheme.displayMedium,
                                   textAlign: TextAlign.center,
                                 ),
                                 const SizedBox(height: 8),
@@ -252,10 +253,13 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
                             },
                             child: Text(
                               page.description,
-                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                height: 1.6,
-                                fontSize: 15,
-                              ),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(
+                                    height: 1.6,
+                                    fontSize: 15,
+                                  ),
                               textAlign: TextAlign.center,
                             ),
                           ),

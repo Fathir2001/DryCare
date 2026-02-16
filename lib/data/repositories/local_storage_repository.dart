@@ -1,4 +1,5 @@
 import 'package:hive_flutter/hive_flutter.dart';
+
 import '../../core/constants/app_constants.dart';
 import '../../core/utils/app_utils.dart';
 import '../models/dashboard_model.dart';
@@ -29,7 +30,8 @@ class LocalStorageRepository {
 
   Future<void> saveQuestionnaireResults(int score, List<int> answers) async {
     await _userBox.put(AppConstants.drynessScore, score);
-    await _userBox.put(AppConstants.drynessLevel, AppUtils.getDrynessLevel(score));
+    await _userBox.put(
+        AppConstants.drynessLevel, AppUtils.getDrynessLevel(score));
     await _userBox.put(AppConstants.questionnaireAnswers, answers);
     await _userBox.put(AppConstants.questionnaireCompleted, true);
   }
@@ -86,7 +88,8 @@ class LocalStorageRepository {
 
   Future<void> saveDashboardData(DashboardModel data) async {
     await _dashboardBox.put(AppConstants.waterIntake, data.waterIntake);
-    await _dashboardBox.put(AppConstants.morningChecklist, data.morningChecklist);
+    await _dashboardBox.put(
+        AppConstants.morningChecklist, data.morningChecklist);
     await _dashboardBox.put(AppConstants.nightChecklist, data.nightChecklist);
     await _dashboardBox.put(AppConstants.streakCount, data.streakCount);
     await _dashboardBox.put(
@@ -107,18 +110,22 @@ class LocalStorageRepository {
 
   Future<void> updateStreak(int streak, DateTime date) async {
     await _dashboardBox.put(AppConstants.streakCount, streak);
-    await _dashboardBox.put(AppConstants.lastActiveDate, date.toIso8601String());
+    await _dashboardBox.put(
+        AppConstants.lastActiveDate, date.toIso8601String());
   }
 
   // Reset daily data (call when new day detected)
   Future<void> resetDailyData() async {
     await _dashboardBox.put(AppConstants.waterIntake, 0);
-    await _dashboardBox.put(AppConstants.morningChecklist, List<bool>.filled(5, false));
-    await _dashboardBox.put(AppConstants.nightChecklist, List<bool>.filled(5, false));
+    await _dashboardBox.put(
+        AppConstants.morningChecklist, List<bool>.filled(5, false));
+    await _dashboardBox.put(
+        AppConstants.nightChecklist, List<bool>.filled(5, false));
   }
 
   // Settings
-  bool get isDarkMode => _settingsBox.get(AppConstants.isDarkMode, defaultValue: true);
+  bool get isDarkMode =>
+      _settingsBox.get(AppConstants.isDarkMode, defaultValue: true);
 
   Future<void> setDarkMode(bool value) async {
     await _settingsBox.put(AppConstants.isDarkMode, value);

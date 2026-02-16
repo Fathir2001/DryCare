@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../core/theme/app_colors.dart';
+
 import '../../../core/providers/app_providers.dart';
+import '../../../core/theme/app_colors.dart';
 import '../../../data/datasources/questionnaire_datasource.dart';
 import '../../../data/models/question_model.dart';
-import '../../../shared/widgets/gradient_background.dart';
-import '../../../shared/widgets/glass_card.dart';
-import '../../../shared/widgets/gradient_button.dart';
 import '../../../shared/widgets/animated_progress_bar.dart';
+import '../../../shared/widgets/glass_card.dart';
+import '../../../shared/widgets/gradient_background.dart';
+import '../../../shared/widgets/gradient_button.dart';
 import '../../result/screens/result_screen.dart';
 
 class QuestionnaireScreen extends ConsumerStatefulWidget {
@@ -89,8 +90,7 @@ class _QuestionnaireScreenState extends ConsumerState<QuestionnaireScreen>
 
     _slideController.forward();
     _fadeController.animateTo(1.0,
-        duration: const Duration(milliseconds: 400),
-        curve: Curves.easeOut);
+        duration: const Duration(milliseconds: 400), curve: Curves.easeOut);
   }
 
   void _goToPreviousQuestion() {
@@ -108,8 +108,7 @@ class _QuestionnaireScreenState extends ConsumerState<QuestionnaireScreen>
 
     _slideController.forward();
     _fadeController.animateTo(1.0,
-        duration: const Duration(milliseconds: 400),
-        curve: Curves.easeOut);
+        duration: const Duration(milliseconds: 400), curve: Curves.easeOut);
   }
 
   Future<void> _submitAnswers() async {
@@ -212,8 +211,7 @@ class _QuestionnaireScreenState extends ConsumerState<QuestionnaireScreen>
     );
   }
 
-  Widget _buildQuestionPage(
-      QuestionModel question, int index, bool isDark) {
+  Widget _buildQuestionPage(QuestionModel question, int index, bool isDark) {
     return SlideTransition(
       position: _slideAnimation,
       child: FadeTransition(
@@ -252,8 +250,8 @@ class _QuestionnaireScreenState extends ConsumerState<QuestionnaireScreen>
                 child: Text(
                   question.question,
                   style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    height: 1.4,
-                  ),
+                        height: 1.4,
+                      ),
                   textAlign: TextAlign.center,
                 ),
               ),
@@ -303,9 +301,7 @@ class _QuestionnaireScreenState extends ConsumerState<QuestionnaireScreen>
                   color: isSelected ? AppColors.coral : AppColors.textSecondary,
                   width: 2,
                 ),
-                color: isSelected
-                    ? AppColors.coral
-                    : Colors.transparent,
+                color: isSelected ? AppColors.coral : Colors.transparent,
               ),
               child: isSelected
                   ? const Icon(Icons.check, size: 16, color: Colors.white)
@@ -319,8 +315,12 @@ class _QuestionnaireScreenState extends ConsumerState<QuestionnaireScreen>
                   fontSize: 15,
                   fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
                   color: isSelected
-                      ? (isDark ? AppColors.textPrimary : AppColors.lightTextPrimary)
-                      : (isDark ? AppColors.textSecondary : AppColors.lightTextSecondary),
+                      ? (isDark
+                          ? AppColors.textPrimary
+                          : AppColors.lightTextPrimary)
+                      : (isDark
+                          ? AppColors.textSecondary
+                          : AppColors.lightTextSecondary),
                 ),
               ),
             ),

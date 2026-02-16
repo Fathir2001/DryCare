@@ -7,7 +7,8 @@ class TipsDataSource {
       subtitle: 'Understanding the root of the problem',
       icon: '🔍',
       category: 'Causes',
-      content: '''Dry skin (xerosis) occurs when your skin doesn't retain enough moisture. Here are the most common causes:
+      content:
+          '''Dry skin (xerosis) occurs when your skin doesn't retain enough moisture. Here are the most common causes:
 
 **Environmental Factors**
 • Low humidity, especially in winter or dry climates
@@ -40,7 +41,8 @@ Understanding what's causing YOUR dry skin is the first step to fixing it. Pay a
       subtitle: 'Eat your way to glowing skin',
       icon: '🥑',
       category: 'Nutrition',
-      content: '''What you eat directly affects your skin's hydration levels. Here are the top foods to include in your diet:
+      content:
+          '''What you eat directly affects your skin's hydration levels. Here are the top foods to include in your diet:
 
 **Water-Rich Fruits**
 • Watermelon (92% water) – contains lycopene for skin protection
@@ -73,7 +75,8 @@ Understanding what's causing YOUR dry skin is the first step to fixing it. Pay a
       subtitle: 'Are you accidentally hurting your skin?',
       icon: '⚠️',
       category: 'Mistakes',
-      content: '''Many people unknowingly make these skincare mistakes that worsen dry skin:
+      content:
+          '''Many people unknowingly make these skincare mistakes that worsen dry skin:
 
 **Cleansing Errors**
 • Using foaming cleansers that strip natural oils
@@ -114,7 +117,8 @@ Understanding what's causing YOUR dry skin is the first step to fixing it. Pay a
       subtitle: 'Adapt your routine to the weather',
       icon: '🌦',
       category: 'Seasonal',
-      content: '''Your skin's needs change with the seasons. Here's how to adapt:
+      content:
+          '''Your skin's needs change with the seasons. Here's how to adapt:
 
 **❄️ Winter Care**
 • Switch to a richer, cream-based moisturizer
@@ -163,7 +167,8 @@ Understanding what's causing YOUR dry skin is the first step to fixing it. Pay a
       subtitle: 'Your skin repairs itself while you sleep',
       icon: '🌙',
       category: 'Routine',
-      content: '''A proper nighttime skincare routine is crucial for dry skin repair. Your skin regenerates most actively during sleep.
+      content:
+          '''A proper nighttime skincare routine is crucial for dry skin repair. Your skin regenerates most actively during sleep.
 
 **Step 1: Double Cleanse**
 • First, use an oil cleanser or micellar water to remove sunscreen and makeup
@@ -206,7 +211,8 @@ Understanding what's causing YOUR dry skin is the first step to fixing it. Pay a
       subtitle: 'Start your day with protected, hydrated skin',
       icon: '🌅',
       category: 'Routine',
-      content: '''Your morning routine focuses on protection and hydration to face the day ahead.
+      content:
+          '''Your morning routine focuses on protection and hydration to face the day ahead.
 
 **Step 1: Gentle Cleanse**
 • Use a mild, hydrating cleanser

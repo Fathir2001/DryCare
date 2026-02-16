@@ -16,7 +16,8 @@ class AppColors {
   static const Color textSecondary = Color(0xFFD6C7D9);
 
   // Cards - glass style
-  static const Color cardBackground = Color(0x14FFFFFF); // rgba(255,255,255,0.08)
+  static const Color cardBackground =
+      Color(0x14FFFFFF); // rgba(255,255,255,0.08)
   static const Color cardBackgroundLight = Color(0x1A4B2C5E);
 
   // Dark theme

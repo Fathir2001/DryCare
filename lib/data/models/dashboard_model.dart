@@ -30,7 +30,9 @@ class DashboardModel {
   }
 
   double get completionPercentage {
-    int total = morningChecklist.length + nightChecklist.length + 8; // +8 for water goal
+    int total = morningChecklist.length +
+        nightChecklist.length +
+        8; // +8 for water goal
     int completed = morningChecklist.where((e) => e).length +
         nightChecklist.where((e) => e).length +
         (waterIntake.clamp(0, 8));
