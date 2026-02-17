@@ -139,11 +139,9 @@ class LocalStorageRepository {
   }
 
   // User profile
-  String get userName =>
-      _userBox.get(AppConstants.userName, defaultValue: '');
+  String get userName => _userBox.get(AppConstants.userName, defaultValue: '');
 
-  int get userAge =>
-      _userBox.get(AppConstants.userAge, defaultValue: 0);
+  int get userAge => _userBox.get(AppConstants.userAge, defaultValue: 0);
 
   Future<void> saveUserProfile(String name, int age) async {
     await _userBox.put(AppConstants.userName, name);
