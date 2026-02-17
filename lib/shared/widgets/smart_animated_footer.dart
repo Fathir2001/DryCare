@@ -1,11 +1,12 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../../core/theme/app_colors.dart';
-
-/// A smart animated bottom navigation bar with a wavy notch that follows
-/// the selected tab. The active icon floats above the bar inside a
-/// glowing circle, and a fluid curve wraps around it.
+/// A smart animated bottom navigation bar inspired by the "organic blob" design.
+/// The bar is a rounded pill shape. The active item has a circular bubble that
+/// protrudes above the bar, connected by a smooth organic curve — like the
+/// circle grew out of the bar.
 class SmartAnimatedFooter extends StatefulWidget {
   final int currentIndex;
   final ValueChanged<int> onTap;
@@ -36,21 +37,20 @@ class _SmartAnimatedFooterState extends State<SmartAnimatedFooter>
 
     _slideController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 400),
+      duration: const Duration(milliseconds: 500),
     );
 
     _bounceController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 500),
+      duration: const Duration(milliseconds: 600),
     );
     _bounceAnimation = TweenSequence<double>([
-      TweenSequenceItem(tween: Tween(begin: 1.0, end: 1.25), weight: 30),
-      TweenSequenceItem(tween: Tween(begin: 1.25, end: 0.9), weight: 25),
-      TweenSequenceItem(tween: Tween(begin: 0.9, end: 1.05), weight: 25),
-      TweenSequenceItem(tween: Tween(begin: 1.05, end: 1.0), weight: 20),
+      TweenSequenceItem(tween: Tween(begin: 0.85, end: 1.08), weight: 40),
+      TweenSequenceItem(tween: Tween(begin: 1.08, end: 0.95), weight: 25),
+      TweenSequenceItem(tween: Tween(begin: 0.95, end: 1.0), weight: 35),
     ]).animate(CurvedAnimation(
       parent: _bounceController,
-      curve: Curves.easeInOut,
+      curve: Curves.easeOutCubic,
     ));
   }
 
@@ -71,270 +71,343 @@ class _SmartAnimatedFooterState extends State<SmartAnimatedFooter>
     super.dispose();
   }
 
+  // ── Active icon center X for a given index ──
+  double _centerXForIndex(int index, double barWidth, double barMarginH) {
+    final innerWidth = barWidth - barMarginH * 2;
+    final itemWidth = innerWidth / widget.items.length;
+    return barMarginH + itemWidth * index + itemWidth / 2;
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final barColor = isDark ? const Color(0xFF1E1230) : const Color(0xFFF5F0F8);
-    final shadowColor = isDark
-        ? Colors.black.withValues(alpha: 0.5)
-        : AppColors.deepPurple.withValues(alpha: 0.12);
+    final screenWidth = MediaQuery.of(context).size.width;
 
-    return Container(
-      height: 90,
-      padding: const EdgeInsets.only(bottom: 6),
-      child: Stack(
-        alignment: Alignment.bottomCenter,
-        clipBehavior: Clip.none,
-        children: [
-          // ── Main bar with wave cutout ──
-          AnimatedBuilder(
-            animation: _slideController,
-            builder: (context, child) {
-              return CustomPaint(
-                size: Size(MediaQuery.of(context).size.width, 70),
-                painter: _WaveNavPainter(
-                  currentIndex: widget.currentIndex,
-                  previousIndex: _previousIndex,
-                  progress: CurvedAnimation(
-                    parent: _slideController,
-                    curve: Curves.easeInOutCubic,
-                  ).value,
-                  itemCount: widget.items.length,
-                  color: barColor,
-                  shadowColor: shadowColor,
-                  isDark: isDark,
-                ),
-              );
-            },
-          ),
+    // Bar sizing
+    const barMarginH = 24.0;
+    const barHeight = 62.0;
+    const barRadius = 31.0;
+    const circleRadius = 29.0;
+    const circleRingWidth = 3.5;
+    const circleOverlap = 16.0;
 
-          // ── Tab icons ──
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            height: 70,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: List.generate(widget.items.length, (index) {
-                final isSelected = widget.currentIndex == index;
-                return Expanded(
-                  child: GestureDetector(
-                    onTap: () {
-                      if (index != widget.currentIndex) {
-                        HapticFeedback.lightImpact();
-                        widget.onTap(index);
-                      }
-                    },
-                    behavior: HitTestBehavior.opaque,
-                    child: _buildTabItem(index, isSelected, isDark),
-                  ),
-                );
-              }),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTabItem(int index, bool isSelected, bool isDark) {
-    final item = widget.items[index];
+    // Colors
+    final barColor = isDark ? const Color(0xFF1A1025) : const Color(0xFF2B2B38);
+    final circleColor =
+        isDark ? const Color(0xFF1A1025) : const Color(0xFF2B2B38);
+    final ringColor = isDark ? const Color(0xFF3A2D4F) : Colors.white;
+    final inactiveIconColor = isDark
+        ? Colors.white.withValues(alpha: 0.5)
+        : Colors.white.withValues(alpha: 0.55);
 
     return AnimatedBuilder(
-      animation: _bounceAnimation,
-      builder: (context, child) {
-        // Only bounce the currently selected item
-        final scale = isSelected ? _bounceAnimation.value : 1.0;
-        final yOffset = isSelected ? -24.0 : 0.0;
+      animation: _slideController,
+      builder: (context, _) {
+        final curvedProgress = CurvedAnimation(
+          parent: _slideController,
+          curve: Curves.easeInOutCubic,
+        ).value;
 
-        return Transform.translate(
-          offset: Offset(0, yOffset),
-          child: Transform.scale(
-            scale: scale,
-            child: child,
+        final prevCX =
+            _centerXForIndex(_previousIndex, screenWidth, barMarginH);
+        final currCX =
+            _centerXForIndex(widget.currentIndex, screenWidth, barMarginH);
+        final activeCX = prevCX + (currCX - prevCX) * curvedProgress;
+
+        // Circle center Y – sits on top of the bar with overlap
+        const totalHeight = barHeight + circleRadius * 2 - circleOverlap + 10;
+        const barTop = totalHeight - barHeight;
+        const circleCY =
+            barTop - circleRadius + circleOverlap + circleRingWidth;
+
+        return SizedBox(
+          height: totalHeight + 6,
+          child: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              // ── Bar background with organic notch ──
+              Positioned(
+                left: 0,
+                right: 0,
+                bottom: 6,
+                height: barHeight,
+                child: CustomPaint(
+                  painter: _OrganicBarPainter(
+                    barMarginH: barMarginH,
+                    barRadius: barRadius,
+                    activeCenterX: activeCX,
+                    circleRadius: circleRadius + circleRingWidth + 4,
+                    barColor: barColor,
+                    isDark: isDark,
+                  ),
+                ),
+              ),
+
+              // ── Organic ring + circle ──
+              Positioned(
+                left: activeCX - circleRadius - circleRingWidth,
+                top: circleCY - circleRadius - circleRingWidth,
+                child: AnimatedBuilder(
+                  animation: _bounceAnimation,
+                  builder: (context, child) {
+                    return Transform.scale(
+                      scale: _bounceAnimation.value,
+                      child: child,
+                    );
+                  },
+                  child: CustomPaint(
+                    size: Size(
+                      (circleRadius + circleRingWidth) * 2,
+                      (circleRadius + circleRingWidth) * 2,
+                    ),
+                    painter: _CircleRingPainter(
+                      ringColor: ringColor,
+                      circleColor: circleColor,
+                      ringWidth: circleRingWidth,
+                    ),
+                  ),
+                ),
+              ),
+
+              // ── Active icon (gradient shader) ──
+              Positioned(
+                left: activeCX - circleRadius,
+                top: circleCY - circleRadius,
+                child: AnimatedBuilder(
+                  animation: _bounceAnimation,
+                  builder: (context, child) {
+                    return Transform.scale(
+                      scale: _bounceAnimation.value,
+                      child: child,
+                    );
+                  },
+                  child: SizedBox(
+                    width: circleRadius * 2,
+                    height: circleRadius * 2,
+                    child: Center(
+                      child: ShaderMask(
+                        shaderCallback: (bounds) => const LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            Color(0xFF7B61FF),
+                            Color(0xFF5DADE2),
+                          ],
+                        ).createShader(bounds),
+                        child: AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 300),
+                          transitionBuilder: (child, animation) =>
+                              ScaleTransition(scale: animation, child: child),
+                          child: Icon(
+                            widget.items[widget.currentIndex].activeIcon,
+                            key: ValueKey(widget.currentIndex),
+                            color: Colors.white,
+                            size: 26,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+
+              // ── Tap targets for all items ──
+              Positioned(
+                left: barMarginH,
+                right: barMarginH,
+                bottom: 6,
+                height: barHeight,
+                child: Row(
+                  children: List.generate(widget.items.length, (index) {
+                    final isSelected = widget.currentIndex == index;
+                    return Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          if (index != widget.currentIndex) {
+                            HapticFeedback.lightImpact();
+                            widget.onTap(index);
+                          }
+                        },
+                        behavior: HitTestBehavior.opaque,
+                        child: Center(
+                          child: AnimatedOpacity(
+                            opacity: isSelected ? 0.0 : 1.0,
+                            duration: const Duration(milliseconds: 200),
+                            child: AnimatedScale(
+                              scale: isSelected ? 0.0 : 1.0,
+                              duration: const Duration(milliseconds: 200),
+                              child: Icon(
+                                widget.items[index].icon,
+                                color: inactiveIconColor,
+                                size: 24,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  }),
+                ),
+              ),
+            ],
           ),
         );
       },
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          // Icon with circle background for selected
-          AnimatedContainer(
-            duration: const Duration(milliseconds: 350),
-            curve: Curves.easeOutBack,
-            width: isSelected ? 54 : 40,
-            height: isSelected ? 54 : 40,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: isSelected
-                  ? LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        AppColors.deepPurple,
-                        AppColors.dustyRose,
-                      ],
-                    )
-                  : null,
-              boxShadow: isSelected
-                  ? [
-                      BoxShadow(
-                        color: AppColors.deepPurple.withValues(alpha: 0.4),
-                        blurRadius: 16,
-                        spreadRadius: 2,
-                        offset: const Offset(0, 4),
-                      ),
-                    ]
-                  : null,
-            ),
-            child: Icon(
-              isSelected ? item.activeIcon : item.icon,
-              color: isSelected
-                  ? Colors.white
-                  : (isDark
-                      ? AppColors.textSecondary
-                      : AppColors.lightTextSecondary),
-              size: isSelected ? 26 : 22,
-            ),
-          ),
-
-          // Label with smooth fade
-          AnimatedOpacity(
-            opacity: isSelected ? 0.0 : 0.7,
-            duration: const Duration(milliseconds: 250),
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 250),
-              height: isSelected ? 0 : 18,
-              child: isSelected
-                  ? const SizedBox.shrink()
-                  : Text(
-                      item.label,
-                      style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w500,
-                        color: isDark
-                            ? AppColors.textSecondary
-                            : AppColors.lightTextSecondary,
-                      ),
-                    ),
-            ),
-          ),
-        ],
-      ),
     );
   }
 }
 
 // ═══════════════════════════════════════════
-//  Custom painter for the wave notch
+//  Organic bar painter — draws the pill bar
+//  with a smooth semicircular notch cutout
 // ═══════════════════════════════════════════
-class _WaveNavPainter extends CustomPainter {
-  final int currentIndex;
-  final int previousIndex;
-  final double progress;
-  final int itemCount;
-  final Color color;
-  final Color shadowColor;
+class _OrganicBarPainter extends CustomPainter {
+  final double barMarginH;
+  final double barRadius;
+  final double activeCenterX;
+  final double circleRadius;
+  final Color barColor;
   final bool isDark;
 
-  _WaveNavPainter({
-    required this.currentIndex,
-    required this.previousIndex,
-    required this.progress,
-    required this.itemCount,
-    required this.color,
-    required this.shadowColor,
+  _OrganicBarPainter({
+    required this.barMarginH,
+    required this.barRadius,
+    required this.activeCenterX,
+    required this.circleRadius,
+    required this.barColor,
     required this.isDark,
   });
 
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = color
+      ..color = barColor
       ..style = PaintingStyle.fill;
 
+    // Shadow
     final shadowPaint = Paint()
-      ..color = shadowColor
-      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 12);
+      ..color = Colors.black.withValues(alpha: isDark ? 0.35 : 0.12)
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 14);
 
-    final itemWidth = size.width / itemCount;
+    final barLeft = barMarginH;
+    final barRight = size.width - barMarginH;
+    const barTop = 0.0;
+    final barBottom = size.height;
 
-    // Interpolate notch center between previous and current
-    final prevCenter = itemWidth * previousIndex + itemWidth / 2;
-    final currCenter = itemWidth * currentIndex + itemWidth / 2;
-    final notchCenter = prevCenter + (currCenter - prevCenter) * progress;
+    // Notch geometry — smooth semicircular cutout
+    final notchR = circleRadius;
 
-    final notchRadius = 34.0;
-    final notchDepth = 22.0;
-
+    // Build the pill-shaped bar path with notch
     final path = Path();
-    path.moveTo(0, notchDepth);
 
-    // Left side up to notch curve
-    final leftStart = notchCenter - notchRadius - 14;
-    path.lineTo(leftStart.clamp(0, size.width), notchDepth);
+    // Start bottom-left → go clockwise
+    path.moveTo(barLeft, barBottom - barRadius);
 
-    // Wave notch (cubic bézier curves)
-    path.cubicTo(
-      notchCenter - notchRadius + 6, notchDepth, // control 1
-      notchCenter - notchRadius + 4, 0, // control 2
-      notchCenter, 0, // end
-    );
-    path.cubicTo(
-      notchCenter + notchRadius - 4, 0, // control 1
-      notchCenter + notchRadius - 6, notchDepth, // control 2
-      (notchCenter + notchRadius + 14).clamp(0, size.width), notchDepth, // end
+    // Bottom-left corner
+    path.arcToPoint(
+      Offset(barLeft + barRadius, barBottom),
+      radius: Radius.circular(barRadius),
+      clockwise: false,
     );
 
-    // Right side
-    path.lineTo(size.width, notchDepth);
-    path.lineTo(size.width, size.height);
-    path.lineTo(0, size.height);
+    // Bottom edge
+    path.lineTo(barRight - barRadius, barBottom);
+
+    // Bottom-right corner
+    path.arcToPoint(
+      Offset(barRight, barBottom - barRadius),
+      radius: Radius.circular(barRadius),
+      clockwise: false,
+    );
+
+    // Right edge
+    path.lineTo(barRight, barTop + barRadius);
+
+    // Top-right corner
+    path.arcToPoint(
+      Offset(barRight - barRadius, barTop),
+      radius: Radius.circular(barRadius),
+      clockwise: false,
+    );
+
+    // ── Top edge with smooth organic notch ──
+    final notchRight = activeCenterX + notchR;
+    final notchLeft = activeCenterX - notchR;
+
+    // From top-right corner to notch right edge
+    if (notchRight < barRight - barRadius) {
+      path.lineTo(notchRight, barTop);
+    }
+
+    // Semicircular notch (arc going upward / counter-clockwise)
+    path.arcTo(
+      Rect.fromCircle(
+        center: Offset(activeCenterX, barTop),
+        radius: notchR,
+      ),
+      0,
+      -math.pi,
+      false,
+    );
+
+    // From notch left edge to top-left corner
+    if (notchLeft > barLeft + barRadius) {
+      path.lineTo(barLeft + barRadius, barTop);
+    }
+
+    // Top-left corner
+    path.arcToPoint(
+      Offset(barLeft, barTop + barRadius),
+      radius: Radius.circular(barRadius),
+      clockwise: false,
+    );
+
     path.close();
 
-    // Draw shadow first
-    canvas.drawPath(path.shift(const Offset(0, 2)), shadowPaint);
-    // Draw bar
+    // Draw shadow, then bar
+    canvas.drawPath(path.shift(const Offset(0, 3)), shadowPaint);
     canvas.drawPath(path, paint);
-
-    // Draw subtle top border
-    final borderPaint = Paint()
-      ..color = isDark
-          ? Colors.white.withValues(alpha: 0.06)
-          : AppColors.deepPurple.withValues(alpha: 0.06)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1;
-
-    final borderPath = Path();
-    borderPath.moveTo(0, notchDepth);
-    borderPath.lineTo(leftStart.clamp(0, size.width), notchDepth);
-    borderPath.cubicTo(
-      notchCenter - notchRadius + 6,
-      notchDepth,
-      notchCenter - notchRadius + 4,
-      0,
-      notchCenter,
-      0,
-    );
-    borderPath.cubicTo(
-      notchCenter + notchRadius - 4,
-      0,
-      notchCenter + notchRadius - 6,
-      notchDepth,
-      (notchCenter + notchRadius + 14).clamp(0, size.width),
-      notchDepth,
-    );
-    borderPath.lineTo(size.width, notchDepth);
-    canvas.drawPath(borderPath, borderPaint);
   }
 
   @override
-  bool shouldRepaint(_WaveNavPainter oldDelegate) {
-    return oldDelegate.progress != progress ||
-        oldDelegate.currentIndex != currentIndex ||
-        oldDelegate.color != color;
+  bool shouldRepaint(_OrganicBarPainter oldDelegate) {
+    return oldDelegate.activeCenterX != activeCenterX ||
+        oldDelegate.barColor != barColor;
+  }
+}
+
+// ═══════════════════════════════════════════
+//  Circle ring painter — outer ring + fill
+// ═══════════════════════════════════════════
+class _CircleRingPainter extends CustomPainter {
+  final Color ringColor;
+  final Color circleColor;
+  final double ringWidth;
+
+  _CircleRingPainter({
+    required this.ringColor,
+    required this.circleColor,
+    required this.ringWidth,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = Offset(size.width / 2, size.height / 2);
+    final outerRadius = size.width / 2;
+    final innerRadius = outerRadius - ringWidth;
+
+    // Ring
+    canvas.drawCircle(
+        center, outerRadius, Paint()..color = ringColor);
+    // Inner circle
+    canvas.drawCircle(
+        center, innerRadius, Paint()..color = circleColor);
+  }
+
+  @override
+  bool shouldRepaint(_CircleRingPainter oldDelegate) {
+    return oldDelegate.ringColor != ringColor ||
+        oldDelegate.circleColor != circleColor;
   }
 }
 

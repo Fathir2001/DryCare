@@ -174,8 +174,8 @@ class _QuestionnaireScreenState extends ConsumerState<QuestionnaireScreen>
     if (isFirstAnswer) {
       _funFactController.forward();
 
-      // Auto-advance after fun-fact display
-      Future.delayed(const Duration(milliseconds: 1800), () {
+      // Auto-advance after fun-fact display (shorter delay for snappier UX)
+      Future.delayed(const Duration(milliseconds: 1400), () {
         if (!mounted || _isTransitioning) return;
         if (questionIndex < _questions.length - 1) {
           _goToNextQuestion();
@@ -621,34 +621,115 @@ class _QuestionnaireScreenState extends ConsumerState<QuestionnaireScreen>
                 ),
               ),
 
-              // ── Main content with page transition ──
-              Expanded(
-                child: AnimatedBuilder(
-                  animation: _transitionController,
-                  builder: (context, child) {
-                    final scale = 0.85 + (_transitionController.value * 0.15);
-                    return Opacity(
-                      opacity: _transitionController.value.clamp(0.0, 1.0),
-                      child: Transform.scale(
-                        scale: scale,
-                        child: child,
+              // ── Step dots ──
+              Padding(
+                padding: const EdgeInsets.only(top: 8, bottom: 4),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: List.generate(_questions.length, (i) {
+                    final isActive = i == _currentQuestion;
+                    final isAnswered = _answers[i] != -1;
+                    return AnimatedContainer(
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeOutCubic,
+                      margin: const EdgeInsets.symmetric(horizontal: 3),
+                      width: isActive ? 24 : 8,
+                      height: 8,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(4),
+                        color: isActive
+                            ? accentColor
+                            : isAnswered
+                                ? accentColor.withValues(alpha: 0.35)
+                                : (isDark
+                                    ? Colors.white.withValues(alpha: 0.12)
+                                    : AppColors.deepPurple.withValues(alpha: 0.12)),
                       ),
                     );
-                  },
-                  child: _buildQuestionContent(isDark, accentColor),
+                  }),
                 ),
               ),
 
-              // ── Submit button (last question, answered) ──
-              if (_currentQuestion == _questions.length - 1 &&
-                  _answers[_currentQuestion] != -1)
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(32, 0, 32, 32),
-                  child: GradientButton(
-                    text: 'See My Results ✨',
-                    icon: Icons.auto_awesome,
-                    onPressed: _submitAnswers,
+              // ── Main content with swipe & page transition ──
+              Expanded(
+                child: GestureDetector(
+                  onHorizontalDragEnd: (details) {
+                    if (details.primaryVelocity == null) return;
+                    if (details.primaryVelocity! < -200) {
+                      // Swipe left → next
+                      if (_answers[_currentQuestion] != -1) {
+                        _goToNextQuestion();
+                      }
+                    } else if (details.primaryVelocity! > 200) {
+                      // Swipe right → previous
+                      _goToPreviousQuestion();
+                    }
+                  },
+                  child: AnimatedBuilder(
+                    animation: _transitionController,
+                    builder: (context, child) {
+                      final scale = 0.85 + (_transitionController.value * 0.15);
+                      return Opacity(
+                        opacity: _transitionController.value.clamp(0.0, 1.0),
+                        child: Transform.scale(
+                          scale: scale,
+                          child: child,
+                        ),
+                      );
+                    },
+                    child: _buildQuestionContent(isDark, accentColor),
                   ),
+                ),
+              ),
+
+              // ── Bottom action area ──
+              if (_answers[_currentQuestion] != -1)
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(32, 0, 32, 24),
+                  child: _currentQuestion == _questions.length - 1
+                      ? GradientButton(
+                          text: 'See My Results ✨',
+                          icon: Icons.auto_awesome,
+                          onPressed: _submitAnswers,
+                        )
+                      : GestureDetector(
+                          onTap: _goToNextQuestion,
+                          child: AnimatedOpacity(
+                            opacity: _answers[_currentQuestion] != -1 ? 1.0 : 0.0,
+                            duration: const Duration(milliseconds: 300),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 24, vertical: 12),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(30),
+                                color: accentColor.withValues(alpha: 0.15),
+                                border: Border.all(
+                                  color: accentColor.withValues(alpha: 0.3),
+                                ),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    'Tap to continue',
+                                    style: TextStyle(
+                                      color: accentColor,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 6),
+                                  Icon(
+                                    Icons.arrow_forward_rounded,
+                                    color: accentColor,
+                                    size: 18,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
                 ),
             ],
           ),

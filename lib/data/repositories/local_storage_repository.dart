@@ -125,7 +125,7 @@ class LocalStorageRepository {
 
   // Settings
   bool get isDarkMode =>
-      _settingsBox.get(AppConstants.isDarkMode, defaultValue: true);
+      _settingsBox.get(AppConstants.isDarkMode, defaultValue: false);
 
   Future<void> setDarkMode(bool value) async {
     await _settingsBox.put(AppConstants.isDarkMode, value);
