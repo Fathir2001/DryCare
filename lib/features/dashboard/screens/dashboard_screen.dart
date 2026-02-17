@@ -302,8 +302,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
                             children: [
                               Text(
                                 'Today\'s Progress',
-                                style:
-                                    Theme.of(context).textTheme.titleMedium,
+                                style: Theme.of(context).textTheme.titleMedium,
                               ),
                               const SizedBox(height: 4),
                               Row(
@@ -312,8 +311,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
                                     padding: const EdgeInsets.symmetric(
                                         horizontal: 8, vertical: 4),
                                     decoration: BoxDecoration(
-                                      color:
-                                          levelColor.withValues(alpha: 0.2),
+                                      color: levelColor.withValues(alpha: 0.2),
                                       borderRadius: BorderRadius.circular(8),
                                     ),
                                     child: Text(
@@ -367,8 +365,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
                 title: 'Morning Routine',
                 items: _morningItems,
                 checked: dashboard.morningChecklist,
-                onToggle: (index) =>
-                    ref.read(dashboardProvider.notifier).toggleMorningItem(index),
+                onToggle: (index) => ref
+                    .read(dashboardProvider.notifier)
+                    .toggleMorningItem(index),
                 isDark: isDark,
                 isActive: isMorningActive,
               ),
@@ -763,8 +762,7 @@ class _AnimatedChecklist extends StatelessWidget {
                             shape: BoxShape.circle,
                             boxShadow: [
                               BoxShadow(
-                                color:
-                                    AppColors.coral.withValues(alpha: 0.4),
+                                color: AppColors.coral.withValues(alpha: 0.4),
                                 blurRadius: 12,
                                 spreadRadius: 1,
                               ),
@@ -935,8 +933,7 @@ class _AnimatedCheckItemState extends State<_AnimatedCheckItem>
                   boxShadow: widget.isChecked
                       ? [
                           BoxShadow(
-                            color:
-                                AppColors.mildGreen.withValues(alpha: 0.3),
+                            color: AppColors.mildGreen.withValues(alpha: 0.3),
                             blurRadius: 8,
                             spreadRadius: 1,
                           ),
@@ -959,8 +956,7 @@ class _AnimatedCheckItemState extends State<_AnimatedCheckItem>
                   color: widget.isChecked
                       ? (widget.isDark
                           ? AppColors.textSecondary.withValues(alpha: 0.5)
-                          : AppColors.lightTextSecondary
-                              .withValues(alpha: 0.5))
+                          : AppColors.lightTextSecondary.withValues(alpha: 0.5))
                       : (widget.isDark
                           ? AppColors.textPrimary
                           : AppColors.lightTextPrimary),
