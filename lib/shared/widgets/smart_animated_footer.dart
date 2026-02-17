@@ -397,11 +397,9 @@ class _CircleRingPainter extends CustomPainter {
     final innerRadius = outerRadius - ringWidth;
 
     // Ring
-    canvas.drawCircle(
-        center, outerRadius, Paint()..color = ringColor);
+    canvas.drawCircle(center, outerRadius, Paint()..color = ringColor);
     // Inner circle
-    canvas.drawCircle(
-        center, innerRadius, Paint()..color = circleColor);
+    canvas.drawCircle(center, innerRadius, Paint()..color = circleColor);
   }
 
   @override

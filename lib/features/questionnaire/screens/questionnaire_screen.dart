@@ -643,7 +643,8 @@ class _QuestionnaireScreenState extends ConsumerState<QuestionnaireScreen>
                                 ? accentColor.withValues(alpha: 0.35)
                                 : (isDark
                                     ? Colors.white.withValues(alpha: 0.12)
-                                    : AppColors.deepPurple.withValues(alpha: 0.12)),
+                                    : AppColors.deepPurple
+                                        .withValues(alpha: 0.12)),
                       ),
                     );
                   }),
@@ -695,7 +696,8 @@ class _QuestionnaireScreenState extends ConsumerState<QuestionnaireScreen>
                       : GestureDetector(
                           onTap: _goToNextQuestion,
                           child: AnimatedOpacity(
-                            opacity: _answers[_currentQuestion] != -1 ? 1.0 : 0.0,
+                            opacity:
+                                _answers[_currentQuestion] != -1 ? 1.0 : 0.0,
                             duration: const Duration(milliseconds: 300),
                             child: Container(
                               padding: const EdgeInsets.symmetric(
