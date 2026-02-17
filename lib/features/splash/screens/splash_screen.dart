@@ -88,6 +88,9 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return Scaffold(
       body: Container(
         width: double.infinity,
@@ -96,11 +99,17 @@ class _SplashScreenState extends State<SplashScreen>
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [
-              AppColors.deepPurple,
-              Color(0xFF2D1A3E),
-              AppColors.darkBackground,
-            ],
+            colors: isDark
+                ? [
+                    AppColors.deepPurple,
+                    const Color(0xFF2D1A3E),
+                    AppColors.darkBackground,
+                  ]
+                : [
+                    const Color(0xFFFDF5F3),
+                    const Color(0xFFFEF7F5),
+                    AppColors.lightBackground,
+                  ],
           ),
         ),
         child: Column(
@@ -125,7 +134,9 @@ class _SplashScreenState extends State<SplashScreen>
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                      color: AppColors.coral.withValues(alpha: 0.3),
+                      color: isDark
+                          ? AppColors.coral.withValues(alpha: 0.3)
+                          : AppColors.softPeach.withValues(alpha: 0.4),
                       blurRadius: 40,
                       spreadRadius: 5,
                     ),
@@ -158,7 +169,9 @@ class _SplashScreenState extends State<SplashScreen>
                   Text(
                     'DryCare',
                     style: Theme.of(context).textTheme.displayLarge?.copyWith(
-                          color: AppColors.textPrimary,
+                          color: isDark
+                              ? AppColors.textPrimary
+                              : AppColors.textSecondary,
                           fontWeight: FontWeight.w700,
                           letterSpacing: 1.5,
                         ),
@@ -167,7 +180,7 @@ class _SplashScreenState extends State<SplashScreen>
                   Text(
                     'Dry Skin Face Care',
                     style: TextStyle(
-                      color: AppColors.dustyRose,
+                      color: isDark ? AppColors.dustyRose : AppColors.coral,
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
                       letterSpacing: 1.0,

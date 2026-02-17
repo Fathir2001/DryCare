@@ -68,24 +68,38 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
 
     return Scaffold(
       body: GradientBackground(
-        child: AnimatedSwitcher(
-          duration: const Duration(milliseconds: 300),
-          transitionBuilder: (child, animation) {
-            return FadeTransition(
-              opacity: animation,
-              child: child,
-            );
-          },
-          child: KeyedSubtree(
-            key: ValueKey(_currentIndex),
-            child: screens[_currentIndex],
-          ),
+        child: Stack(
+          children: [
+            // Main content - flows under the dynamic island
+            AnimatedSwitcher(
+              duration: const Duration(milliseconds: 300),
+              transitionBuilder: (child, animation) {
+                return FadeTransition(
+                  opacity: animation,
+                  child: child,
+                );
+              },
+              child: KeyedSubtree(
+                key: ValueKey(_currentIndex),
+                child: screens[_currentIndex],
+              ),
+            ),
+            // Dynamic Island floating at bottom
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: SafeArea(
+                top: false,
+                child: SmartAnimatedFooter(
+                  currentIndex: _currentIndex,
+                  items: _footerItems,
+                  onTap: (index) => setState(() => _currentIndex = index),
+                ),
+              ),
+            ),
+          ],
         ),
-      ),
-      bottomNavigationBar: SmartAnimatedFooter(
-        currentIndex: _currentIndex,
-        items: _footerItems,
-        onTap: (index) => setState(() => _currentIndex = index),
       ),
     );
   }

@@ -1,12 +1,10 @@
-import 'dart:math' as math;
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-/// A smart animated bottom navigation bar inspired by the "organic blob" design.
-/// The bar is a rounded pill shape. The active item has a circular bubble that
-/// protrudes above the bar, connected by a smooth organic curve — like the
-/// circle grew out of the bar.
+import '../../core/theme/app_colors.dart';
+
+/// A Dynamic Island style bottom navigation bar.
+/// Compact pill shape that expands on tap and shrinks back.
 class SmartAnimatedFooter extends StatefulWidget {
   final int currentIndex;
   final ValueChanged<int> onTap;
@@ -25,199 +23,127 @@ class SmartAnimatedFooter extends StatefulWidget {
 
 class _SmartAnimatedFooterState extends State<SmartAnimatedFooter>
     with TickerProviderStateMixin {
-  late AnimationController _slideController;
-  late AnimationController _bounceController;
-  late Animation<double> _bounceAnimation;
+  late AnimationController _expandController;
+  late AnimationController _iconSwapController;
+  late Animation<double> _expandAnimation;
+  late Animation<double> _iconFadeAnimation;
+  bool _isExpanded = false;
 
-  int _previousIndex = 0;
+  // Sizing constants
+  static const double _collapsedWidth = 160.0;
+  static const double _expandedWidth = 280.0;
+  static const double _barHeight = 52.0;
+  static const double _barRadius = 26.0;
+  static const double _iconSize = 22.0;
+  static const double _activeIconSize = 24.0;
 
   @override
   void initState() {
     super.initState();
 
-    _slideController = AnimationController(
+    _expandController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 500),
+      reverseDuration: const Duration(milliseconds: 600),
     );
 
-    _bounceController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 600),
-    );
-    _bounceAnimation = TweenSequence<double>([
-      TweenSequenceItem(tween: Tween(begin: 0.85, end: 1.08), weight: 40),
-      TweenSequenceItem(tween: Tween(begin: 1.08, end: 0.95), weight: 25),
-      TweenSequenceItem(tween: Tween(begin: 0.95, end: 1.0), weight: 35),
-    ]).animate(CurvedAnimation(
-      parent: _bounceController,
+    _expandAnimation = CurvedAnimation(
+      parent: _expandController,
       curve: Curves.easeOutCubic,
-    ));
+      reverseCurve: Curves.easeInOutCubic,
+    );
+
+    _iconSwapController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 250),
+    );
+
+    _iconFadeAnimation = CurvedAnimation(
+      parent: _iconSwapController,
+      curve: Curves.easeOut,
+    );
   }
 
   @override
   void didUpdateWidget(SmartAnimatedFooter oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.currentIndex != widget.currentIndex) {
-      _previousIndex = oldWidget.currentIndex;
-      _slideController.forward(from: 0);
-      _bounceController.forward(from: 0);
+      _triggerExpand();
+      _iconSwapController.forward(from: 0);
     }
+  }
+
+  void _triggerExpand() {
+    if (_isExpanded) return;
+    setState(() => _isExpanded = true);
+    _expandController.forward();
+
+    // Auto-shrink after delay
+    Future.delayed(const Duration(milliseconds: 1200), () {
+      if (mounted) {
+        _expandController.reverse().then((_) {
+          if (mounted) setState(() => _isExpanded = false);
+        });
+      }
+    });
   }
 
   @override
   void dispose() {
-    _slideController.dispose();
-    _bounceController.dispose();
+    _expandController.dispose();
+    _iconSwapController.dispose();
     super.dispose();
-  }
-
-  // ── Active icon center X for a given index ──
-  double _centerXForIndex(int index, double barWidth, double barMarginH) {
-    final innerWidth = barWidth - barMarginH * 2;
-    final itemWidth = innerWidth / widget.items.length;
-    return barMarginH + itemWidth * index + itemWidth / 2;
   }
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final screenWidth = MediaQuery.of(context).size.width;
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
 
-    // Bar sizing
-    const barMarginH = 24.0;
-    const barHeight = 62.0;
-    const barRadius = 31.0;
-    const circleRadius = 29.0;
-    const circleRingWidth = 3.5;
-    const circleOverlap = 16.0;
+    // Dynamic Island is always dark, like iPhone's Dynamic Island
+    final barColor = isDark
+        ? const Color(0xFF1C1C1E) // near-black in dark mode
+        : const Color(0xFF2C2C2E); // dark charcoal in light mode
+    final activeColor = isDark ? AppColors.coral : AppColors.coral;
+    final activeAccent = isDark ? AppColors.softPeach : AppColors.dustyRose;
+    final inactiveColor = Colors.white.withValues(alpha: 0.5);
+    final shadowColor = Colors.black.withValues(alpha: isDark ? 0.5 : 0.15);
+    final activeDotColor = activeColor;
 
-    // Colors
-    final barColor = isDark ? const Color(0xFF1A1025) : const Color(0xFF2B2B38);
-    final circleColor =
-        isDark ? const Color(0xFF1A1025) : const Color(0xFF2B2B38);
-    final ringColor = isDark ? const Color(0xFF3A2D4F) : Colors.white;
-    final inactiveIconColor = isDark
-        ? Colors.white.withValues(alpha: 0.5)
-        : Colors.white.withValues(alpha: 0.55);
+    return SizedBox(
+      height: _barHeight + 24,
+      child: AnimatedBuilder(
+        animation: _expandAnimation,
+        builder: (context, child) {
+          final currentWidth = _collapsedWidth +
+              (_expandedWidth - _collapsedWidth) * _expandAnimation.value;
 
-    return AnimatedBuilder(
-      animation: _slideController,
-      builder: (context, _) {
-        final curvedProgress = CurvedAnimation(
-          parent: _slideController,
-          curve: Curves.easeInOutCubic,
-        ).value;
-
-        final prevCX =
-            _centerXForIndex(_previousIndex, screenWidth, barMarginH);
-        final currCX =
-            _centerXForIndex(widget.currentIndex, screenWidth, barMarginH);
-        final activeCX = prevCX + (currCX - prevCX) * curvedProgress;
-
-        // Circle center Y – sits on top of the bar with overlap
-        const totalHeight = barHeight + circleRadius * 2 - circleOverlap + 10;
-        const barTop = totalHeight - barHeight;
-        const circleCY =
-            barTop - circleRadius + circleOverlap + circleRingWidth;
-
-        return SizedBox(
-          height: totalHeight + 6,
-          child: Stack(
-            clipBehavior: Clip.none,
-            children: [
-              // ── Bar background with organic notch ──
-              Positioned(
-                left: 0,
-                right: 0,
-                bottom: 6,
-                height: barHeight,
-                child: CustomPaint(
-                  painter: _OrganicBarPainter(
-                    barMarginH: barMarginH,
-                    barRadius: barRadius,
-                    activeCenterX: activeCX,
-                    circleRadius: circleRadius + circleRingWidth + 4,
-                    barColor: barColor,
-                    isDark: isDark,
+          return Center(
+            child: Container(
+              width: currentWidth,
+              height: _barHeight,
+              decoration: BoxDecoration(
+                color: barColor,
+                borderRadius: BorderRadius.circular(_barRadius),
+                boxShadow: [
+                  BoxShadow(
+                    color: shadowColor,
+                    blurRadius: 20,
+                    offset: const Offset(0, 4),
+                    spreadRadius: 2,
                   ),
-                ),
-              ),
-
-              // ── Organic ring + circle ──
-              Positioned(
-                left: activeCX - circleRadius - circleRingWidth,
-                top: circleCY - circleRadius - circleRingWidth,
-                child: AnimatedBuilder(
-                  animation: _bounceAnimation,
-                  builder: (context, child) {
-                    return Transform.scale(
-                      scale: _bounceAnimation.value,
-                      child: child,
-                    );
-                  },
-                  child: CustomPaint(
-                    size: Size(
-                      (circleRadius + circleRingWidth) * 2,
-                      (circleRadius + circleRingWidth) * 2,
+                  if (isDark)
+                    BoxShadow(
+                      color: activeColor.withValues(alpha: 0.08),
+                      blurRadius: 30,
+                      offset: const Offset(0, 2),
                     ),
-                    painter: _CircleRingPainter(
-                      ringColor: ringColor,
-                      circleColor: circleColor,
-                      ringWidth: circleRingWidth,
-                    ),
-                  ),
-                ),
+                ],
               ),
-
-              // ── Active icon (gradient shader) ──
-              Positioned(
-                left: activeCX - circleRadius,
-                top: circleCY - circleRadius,
-                child: AnimatedBuilder(
-                  animation: _bounceAnimation,
-                  builder: (context, child) {
-                    return Transform.scale(
-                      scale: _bounceAnimation.value,
-                      child: child,
-                    );
-                  },
-                  child: SizedBox(
-                    width: circleRadius * 2,
-                    height: circleRadius * 2,
-                    child: Center(
-                      child: ShaderMask(
-                        shaderCallback: (bounds) => const LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [
-                            Color(0xFF7B61FF),
-                            Color(0xFF5DADE2),
-                          ],
-                        ).createShader(bounds),
-                        child: AnimatedSwitcher(
-                          duration: const Duration(milliseconds: 300),
-                          transitionBuilder: (child, animation) =>
-                              ScaleTransition(scale: animation, child: child),
-                          child: Icon(
-                            widget.items[widget.currentIndex].activeIcon,
-                            key: ValueKey(widget.currentIndex),
-                            color: Colors.white,
-                            size: 26,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-
-              // ── Tap targets for all items ──
-              Positioned(
-                left: barMarginH,
-                right: barMarginH,
-                bottom: 6,
-                height: barHeight,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(_barRadius),
                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: List.generate(widget.items.length, (index) {
                     final isSelected = widget.currentIndex == index;
                     return Expanded(
@@ -226,192 +152,132 @@ class _SmartAnimatedFooterState extends State<SmartAnimatedFooter>
                           if (index != widget.currentIndex) {
                             HapticFeedback.lightImpact();
                             widget.onTap(index);
+                          } else {
+                            _triggerExpand();
                           }
                         },
                         behavior: HitTestBehavior.opaque,
-                        child: Center(
-                          child: AnimatedOpacity(
-                            opacity: isSelected ? 0.0 : 1.0,
-                            duration: const Duration(milliseconds: 200),
-                            child: AnimatedScale(
-                              scale: isSelected ? 0.0 : 1.0,
-                              duration: const Duration(milliseconds: 200),
-                              child: Icon(
-                                widget.items[index].icon,
-                                color: inactiveIconColor,
-                                size: 24,
-                              ),
-                            ),
-                          ),
+                        child: _DynamicIslandItem(
+                          icon: widget.items[index].icon,
+                          activeIcon: widget.items[index].activeIcon,
+                          label: widget.items[index].label,
+                          isSelected: isSelected,
+                          expandProgress: _expandAnimation.value,
+                          activeColor: activeColor,
+                          activeAccent: activeAccent,
+                          inactiveColor: inactiveColor,
+                          dotColor: activeDotColor,
+                          iconSize: isSelected ? _activeIconSize : _iconSize,
+                          iconFadeAnimation: _iconFadeAnimation,
                         ),
                       ),
                     );
                   }),
                 ),
               ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-}
-
-// ═══════════════════════════════════════════
-//  Organic bar painter — draws the pill bar
-//  with a smooth semicircular notch cutout
-// ═══════════════════════════════════════════
-class _OrganicBarPainter extends CustomPainter {
-  final double barMarginH;
-  final double barRadius;
-  final double activeCenterX;
-  final double circleRadius;
-  final Color barColor;
-  final bool isDark;
-
-  _OrganicBarPainter({
-    required this.barMarginH,
-    required this.barRadius,
-    required this.activeCenterX,
-    required this.circleRadius,
-    required this.barColor,
-    required this.isDark,
-  });
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = barColor
-      ..style = PaintingStyle.fill;
-
-    // Shadow
-    final shadowPaint = Paint()
-      ..color = Colors.black.withValues(alpha: isDark ? 0.35 : 0.12)
-      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 14);
-
-    final barLeft = barMarginH;
-    final barRight = size.width - barMarginH;
-    const barTop = 0.0;
-    final barBottom = size.height;
-
-    // Notch geometry — smooth semicircular cutout
-    final notchR = circleRadius;
-
-    // Build the pill-shaped bar path with notch
-    final path = Path();
-
-    // Start bottom-left → go clockwise
-    path.moveTo(barLeft, barBottom - barRadius);
-
-    // Bottom-left corner
-    path.arcToPoint(
-      Offset(barLeft + barRadius, barBottom),
-      radius: Radius.circular(barRadius),
-      clockwise: false,
-    );
-
-    // Bottom edge
-    path.lineTo(barRight - barRadius, barBottom);
-
-    // Bottom-right corner
-    path.arcToPoint(
-      Offset(barRight, barBottom - barRadius),
-      radius: Radius.circular(barRadius),
-      clockwise: false,
-    );
-
-    // Right edge
-    path.lineTo(barRight, barTop + barRadius);
-
-    // Top-right corner
-    path.arcToPoint(
-      Offset(barRight - barRadius, barTop),
-      radius: Radius.circular(barRadius),
-      clockwise: false,
-    );
-
-    // ── Top edge with smooth organic notch ──
-    final notchRight = activeCenterX + notchR;
-    final notchLeft = activeCenterX - notchR;
-
-    // From top-right corner to notch right edge
-    if (notchRight < barRight - barRadius) {
-      path.lineTo(notchRight, barTop);
-    }
-
-    // Semicircular notch (arc going upward / counter-clockwise)
-    path.arcTo(
-      Rect.fromCircle(
-        center: Offset(activeCenterX, barTop),
-        radius: notchR,
+            ),
+          );
+        },
       ),
-      0,
-      -math.pi,
-      false,
     );
-
-    // From notch left edge to top-left corner
-    if (notchLeft > barLeft + barRadius) {
-      path.lineTo(barLeft + barRadius, barTop);
-    }
-
-    // Top-left corner
-    path.arcToPoint(
-      Offset(barLeft, barTop + barRadius),
-      radius: Radius.circular(barRadius),
-      clockwise: false,
-    );
-
-    path.close();
-
-    // Draw shadow, then bar
-    canvas.drawPath(path.shift(const Offset(0, 3)), shadowPaint);
-    canvas.drawPath(path, paint);
-  }
-
-  @override
-  bool shouldRepaint(_OrganicBarPainter oldDelegate) {
-    return oldDelegate.activeCenterX != activeCenterX ||
-        oldDelegate.barColor != barColor;
   }
 }
 
-// ═══════════════════════════════════════════
-//  Circle ring painter — outer ring + fill
-// ═══════════════════════════════════════════
-class _CircleRingPainter extends CustomPainter {
-  final Color ringColor;
-  final Color circleColor;
-  final double ringWidth;
+class _DynamicIslandItem extends StatelessWidget {
+  final IconData icon;
+  final IconData activeIcon;
+  final String label;
+  final bool isSelected;
+  final double expandProgress;
+  final Color activeColor;
+  final Color activeAccent;
+  final Color inactiveColor;
+  final Color dotColor;
+  final double iconSize;
+  final Animation<double> iconFadeAnimation;
 
-  _CircleRingPainter({
-    required this.ringColor,
-    required this.circleColor,
-    required this.ringWidth,
+  const _DynamicIslandItem({
+    required this.icon,
+    required this.activeIcon,
+    required this.label,
+    required this.isSelected,
+    required this.expandProgress,
+    required this.activeColor,
+    required this.activeAccent,
+    required this.inactiveColor,
+    required this.dotColor,
+    required this.iconSize,
+    required this.iconFadeAnimation,
   });
 
   @override
-  void paint(Canvas canvas, Size size) {
-    final center = Offset(size.width / 2, size.height / 2);
-    final outerRadius = size.width / 2;
-    final innerRadius = outerRadius - ringWidth;
+  Widget build(BuildContext context) {
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeOutCubic,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Icon with glow effect for active
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeOutCubic,
+            padding: EdgeInsets.all(isSelected ? 6 : 4),
+            decoration: isSelected
+                ? BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: activeColor.withValues(alpha: 0.2),
+                  )
+                : null,
+            child: ShaderMask(
+              shaderCallback: (bounds) {
+                if (isSelected) {
+                  return LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [activeColor, activeAccent],
+                  ).createShader(bounds);
+                }
+                return LinearGradient(
+                  colors: [inactiveColor, inactiveColor],
+                ).createShader(bounds);
+              },
+              child: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 250),
+                transitionBuilder: (child, animation) => ScaleTransition(
+                  scale: animation,
+                  child: child,
+                ),
+                child: Icon(
+                  isSelected ? activeIcon : icon,
+                  key: ValueKey('${isSelected}_$icon'),
+                  color: Colors.white,
+                  size: iconSize,
+                ),
+              ),
+            ),
+          ),
 
-    // Ring
-    canvas.drawCircle(center, outerRadius, Paint()..color = ringColor);
-    // Inner circle
-    canvas.drawCircle(center, innerRadius, Paint()..color = circleColor);
-  }
-
-  @override
-  bool shouldRepaint(_CircleRingPainter oldDelegate) {
-    return oldDelegate.ringColor != ringColor ||
-        oldDelegate.circleColor != circleColor;
+          // Animated dot indicator below active icon
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeOutCubic,
+            width: isSelected ? 4.0 : 0.0,
+            height: isSelected ? 4.0 : 0.0,
+            margin: const EdgeInsets.only(top: 3),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: dotColor,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 
-// ═══════════════════════════════════════════
-//  Footer item data class
-// ═══════════════════════════════════════════
+// Footer item data class
 class FooterItem {
   final IconData icon;
   final IconData activeIcon;

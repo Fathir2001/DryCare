@@ -177,7 +177,9 @@ class _QuestionnaireScreenState extends ConsumerState<QuestionnaireScreen>
       // Auto-advance after fun-fact display (shorter delay for snappier UX)
       Future.delayed(const Duration(milliseconds: 1400), () {
         if (!mounted || _isTransitioning) return;
-        if (questionIndex < _questions.length - 1) {
+        // Check if user hasn't manually navigated away already
+        if (questionIndex == _currentQuestion &&
+            questionIndex < _questions.length - 1) {
           _goToNextQuestion();
         }
       });
