@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 
 import '../../core/theme/app_colors.dart';
@@ -28,47 +26,52 @@ class GlassCard extends StatelessWidget {
 
     return Container(
       margin: margin ?? const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-      child: ClipRRect(
+      child: Material(
+        color: Colors.transparent,
         borderRadius: BorderRadius.circular(borderRadius),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-          child: Material(
-            color: Colors.transparent,
-            child: InkWell(
-              onTap: onTap,
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(borderRadius),
+          child: Ink(
+            padding: padding ?? const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              gradient: isDark
+                  ? LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        Colors.white.withValues(alpha: 0.08),
+                        Colors.white.withValues(alpha: 0.03),
+                      ],
+                    )
+                  : null,
+              color: isDark ? null : AppColors.lightCard,
               borderRadius: BorderRadius.circular(borderRadius),
-              child: Container(
-                padding: padding ?? const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  gradient: isDark ? AppColors.cardGradient : null,
-                  color: isDark ? null : AppColors.lightCard,
-                  borderRadius: BorderRadius.circular(borderRadius),
-                  border: Border.all(
-                    color: borderColor ??
-                        (isDark
-                            ? Colors.white.withValues(alpha: 0.1)
-                            : AppColors.deepPurple.withValues(alpha: 0.08)),
-                    width: 1,
-                  ),
-                  boxShadow: isDark
-                      ? [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.2),
-                            blurRadius: 20,
-                            offset: const Offset(0, 8),
-                          ),
-                        ]
-                      : [
-                          BoxShadow(
-                            color: AppColors.deepPurple.withValues(alpha: 0.06),
-                            blurRadius: 20,
-                            offset: const Offset(0, 8),
-                          ),
-                        ],
-                ),
-                child: child,
+              border: Border.all(
+                color: borderColor ??
+                    (isDark
+                        ? Colors.white.withValues(alpha: 0.1)
+                        : AppColors.deepPurple.withValues(alpha: 0.08)),
+                width: 1,
               ),
+              boxShadow: isDark
+                  ? [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.18),
+                        blurRadius: 16,
+                        offset: const Offset(0, 6),
+                      ),
+                    ]
+                  : [
+                      BoxShadow(
+                        color: AppColors.deepPurple.withValues(alpha: 0.05),
+                        blurRadius: 16,
+                        offset: const Offset(0, 6),
+                      ),
+                    ],
             ),
+            child: child,
           ),
         ),
       ),

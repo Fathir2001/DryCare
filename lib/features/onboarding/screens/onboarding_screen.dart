@@ -15,10 +15,12 @@ class OnboardingScreen extends ConsumerStatefulWidget {
   ConsumerState<OnboardingScreen> createState() => _OnboardingScreenState();
 }
 
-class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
-    with TickerProviderStateMixin {
+class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
+
+  /// Incremented on every page change to reset TweenAnimationBuilders.
+  int _animationKey = 0;
 
   final List<OnboardingPageData> _pages = const [
     OnboardingPageData(
@@ -51,54 +53,17 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
     ),
   ];
 
-  late List<AnimationController> _animationControllers;
-  late List<Animation<double>> _fadeAnimations;
-  late List<Animation<Offset>> _slideAnimations;
-
-  @override
-  void initState() {
-    super.initState();
-    _animationControllers = List.generate(
-      3,
-      (index) => AnimationController(
-        vsync: this,
-        duration: const Duration(milliseconds: 800),
-      ),
-    );
-    _fadeAnimations = _animationControllers.map((c) {
-      return CurvedAnimation(parent: c, curve: Curves.easeOut);
-    }).toList();
-    _slideAnimations = _animationControllers.map((c) {
-      return Tween<Offset>(
-        begin: const Offset(0, 40),
-        end: Offset.zero,
-      ).animate(CurvedAnimation(parent: c, curve: Curves.easeOutCubic));
-    }).toList();
-
-    _startPageAnimations();
-  }
-
-  void _startPageAnimations() {
-    for (int i = 0; i < _animationControllers.length; i++) {
-      _animationControllers[i].reset();
-      Future.delayed(Duration(milliseconds: 200 + (i * 150)), () {
-        if (mounted) _animationControllers[i].forward();
-      });
-    }
-  }
-
   @override
   void dispose() {
     _pageController.dispose();
-    for (final c in _animationControllers) {
-      c.dispose();
-    }
     super.dispose();
   }
 
   void _onPageChanged(int page) {
-    setState(() => _currentPage = page);
-    _startPageAnimations();
+    setState(() {
+      _currentPage = page;
+      _animationKey++;
+    });
   }
 
   Future<void> _completeOnboarding() async {
@@ -111,14 +76,13 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
         PageRouteBuilder(
           pageBuilder: (_, __, ___) => const QuestionnaireScreen(),
           transitionsBuilder: (_, animation, __, child) {
-            return ScaleTransition(
-              scale: Tween<double>(begin: 0.85, end: 1.0).animate(
-                CurvedAnimation(parent: animation, curve: Curves.easeOutBack),
-              ),
-              child: FadeTransition(opacity: animation, child: child),
+            return FadeTransition(
+              opacity:
+                  CurvedAnimation(parent: animation, curve: Curves.easeOut),
+              child: child,
             );
           },
-          transitionDuration: const Duration(milliseconds: 600),
+          transitionDuration: const Duration(milliseconds: 500),
         ),
       );
     }
@@ -141,8 +105,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
                           onPressed: () {
                             _pageController.animateToPage(
                               _pages.length - 1,
-                              duration: const Duration(milliseconds: 500),
-                              curve: Curves.easeInOut,
+                              duration: const Duration(milliseconds: 400),
+                              curve: Curves.easeInOutCubic,
                             );
                           },
                           child: Text(
@@ -165,138 +129,13 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
                 child: PageView.builder(
                   controller: _pageController,
                   onPageChanged: _onPageChanged,
+                  physics: const BouncingScrollPhysics(),
                   itemCount: _pages.length,
                   itemBuilder: (context, index) {
-                    final page = _pages[index];
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 32),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          // Animated emoji
-                          AnimatedBuilder(
-                            animation: _animationControllers[0],
-                            builder: (ctx, child) {
-                              return Transform.translate(
-                                offset: _slideAnimations[0].value,
-                                child: Opacity(
-                                  opacity: _fadeAnimations[0].value,
-                                  child: child,
-                                ),
-                              );
-                            },
-                            child: index == 0
-                                ? Container(
-                                    width: 140,
-                                    height: 140,
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      gradient: LinearGradient(
-                                        begin: Alignment.topLeft,
-                                        end: Alignment.bottomRight,
-                                        colors: [
-                                          AppColors.deepPurple
-                                              .withValues(alpha: 0.3),
-                                          AppColors.dustyRose
-                                              .withValues(alpha: 0.3),
-                                        ],
-                                      ),
-                                    ),
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(16),
-                                      child: Image.asset(
-                                        'assets/images/logo.png',
-                                        fit: BoxFit.contain,
-                                      ),
-                                    ),
-                                  )
-                                : Container(
-                                    width: 120,
-                                    height: 120,
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      gradient: LinearGradient(
-                                        begin: Alignment.topLeft,
-                                        end: Alignment.bottomRight,
-                                        colors: [
-                                          AppColors.deepPurple
-                                              .withValues(alpha: 0.3),
-                                          AppColors.dustyRose
-                                              .withValues(alpha: 0.3),
-                                        ],
-                                      ),
-                                    ),
-                                    child: Center(
-                                      child: Text(
-                                        page.emoji,
-                                        style: const TextStyle(fontSize: 56),
-                                      ),
-                                    ),
-                                  ),
-                          ),
-                          const SizedBox(height: 48),
-
-                          // Title
-                          AnimatedBuilder(
-                            animation: _animationControllers[1],
-                            builder: (ctx, child) {
-                              return Transform.translate(
-                                offset: _slideAnimations[1].value,
-                                child: Opacity(
-                                  opacity: _fadeAnimations[1].value,
-                                  child: child,
-                                ),
-                              );
-                            },
-                            child: Column(
-                              children: [
-                                Text(
-                                  page.title,
-                                  style:
-                                      Theme.of(context).textTheme.displayMedium,
-                                  textAlign: TextAlign.center,
-                                ),
-                                const SizedBox(height: 8),
-                                Text(
-                                  page.subtitle,
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    color: AppColors.coral,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(height: 24),
-
-                          // Description
-                          AnimatedBuilder(
-                            animation: _animationControllers[2],
-                            builder: (ctx, child) {
-                              return Transform.translate(
-                                offset: _slideAnimations[2].value,
-                                child: Opacity(
-                                  opacity: _fadeAnimations[2].value,
-                                  child: child,
-                                ),
-                              );
-                            },
-                            child: Text(
-                              page.description,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyMedium
-                                  ?.copyWith(
-                                    height: 1.6,
-                                    fontSize: 15,
-                                  ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                        ],
-                      ),
+                    return _OnboardingPage(
+                      key: ValueKey('page_${index}_$_animationKey'),
+                      page: _pages[index],
+                      isFirstPage: index == 0,
                     );
                   },
                 ),
@@ -333,8 +172,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
                       onPressed: () {
                         if (_currentPage < _pages.length - 1) {
                           _pageController.nextPage(
-                            duration: const Duration(milliseconds: 500),
-                            curve: Curves.easeInOut,
+                            duration: const Duration(milliseconds: 400),
+                            curve: Curves.easeInOutCubic,
                           );
                         } else {
                           _completeOnboarding();
@@ -347,6 +186,136 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+/// Each page manages its own staggered entrance animation independently,
+/// so swiping away doesn't break the outgoing page's visuals.
+class _OnboardingPage extends StatelessWidget {
+  final OnboardingPageData page;
+  final bool isFirstPage;
+
+  const _OnboardingPage({
+    super.key,
+    required this.page,
+    this.isFirstPage = false,
+  });
+
+  Widget _animatedEntry(int index, Widget child) {
+    return TweenAnimationBuilder<double>(
+      tween: Tween(begin: 0.0, end: 1.0),
+      duration: Duration(milliseconds: 500 + (index * 80)),
+      curve: Curves.easeOutCubic,
+      builder: (context, value, child) {
+        return Opacity(
+          opacity: value.clamp(0.0, 1.0),
+          child: Transform.translate(
+            offset: Offset(0, 28 * (1 - value)),
+            child: child,
+          ),
+        );
+      },
+      child: child,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 32),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          // Emoji / Logo
+          _animatedEntry(
+            0,
+            isFirstPage
+                ? Container(
+                    width: 140,
+                    height: 140,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          AppColors.deepPurple.withValues(alpha: 0.3),
+                          AppColors.dustyRose.withValues(alpha: 0.3),
+                        ],
+                      ),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Image.asset(
+                        'assets/images/logo.png',
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+                  )
+                : Container(
+                    width: 120,
+                    height: 120,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          AppColors.deepPurple.withValues(alpha: 0.3),
+                          AppColors.dustyRose.withValues(alpha: 0.3),
+                        ],
+                      ),
+                    ),
+                    child: Center(
+                      child: Text(
+                        page.emoji,
+                        style: const TextStyle(fontSize: 56),
+                      ),
+                    ),
+                  ),
+          ),
+          const SizedBox(height: 48),
+
+          // Title + subtitle
+          _animatedEntry(
+            1,
+            Column(
+              children: [
+                Text(
+                  page.title,
+                  style: Theme.of(context).textTheme.displayMedium,
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  page.subtitle,
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: AppColors.coral,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 24),
+
+          // Description
+          _animatedEntry(
+            2,
+            Text(
+              page.description,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    height: 1.6,
+                    fontSize: 15,
+                  ),
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ],
       ),
     );
   }
