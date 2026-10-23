@@ -32,24 +32,24 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     ),
     OnboardingPageData(
       emoji: '📋',
-      title: 'Smart Skin Assessment',
-      subtitle: 'Quick & personalized analysis',
+      title: 'Skin Routine Questionnaire',
+      subtitle: 'A guide based on your answers',
       description:
-          'Answer 10 simple questions and get a personalized skincare plan based on your lifestyle and habits.',
+          'Answer 10 questions to explore general skincare suggestions for your routine.',
     ),
     OnboardingPageData(
       emoji: '💧',
       title: 'Daily Care Tracking',
       subtitle: 'Build healthy skin habits',
       description:
-          'Track your hydration, follow morning & night routines, and watch your skin improve day by day.',
+          'Track water and check off morning and night skincare steps each day.',
     ),
     OnboardingPageData(
       emoji: '🔒',
-      title: '100% Private & Offline',
+      title: 'Private, Local Tracking',
       subtitle: 'Your data stays on your device',
       description:
-          'Everything works offline. No accounts, no cloud, no tracking. Your skin, your privacy.',
+          'Your entries are saved on this device. Core guides and tracking work offline.',
     ),
   ];
 

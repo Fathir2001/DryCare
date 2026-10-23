@@ -19,7 +19,7 @@ class AppTheme {
         error: AppColors.severeRed,
       ),
       textTheme: _buildTextTheme(Brightness.dark),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: AppColors.darkCard,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(24),
@@ -82,7 +82,7 @@ class AppTheme {
         error: AppColors.severeRed,
       ),
       textTheme: _buildTextTheme(Brightness.light),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: AppColors.lightCard,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(24),

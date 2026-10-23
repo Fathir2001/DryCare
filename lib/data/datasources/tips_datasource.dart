@@ -34,7 +34,7 @@ class TipsDataSource {
 • Hormonal changes
 • Vitamin deficiencies (A, D, E)
 
-Understanding what's causing YOUR dry skin is the first step to fixing it. Pay attention to when your skin feels driest and what might be triggering it.''',
+These are possible contributors, not a way to identify the cause of your symptoms. If dryness persists, worsens, or becomes painful, ask a qualified professional for advice.''',
     ),
     TipArticle(
       title: 'Best Foods for Skin Hydration',
@@ -42,7 +42,7 @@ Understanding what's causing YOUR dry skin is the first step to fixing it. Pay a
       icon: '🥑',
       category: 'Nutrition',
       content:
-          '''What you eat directly affects your skin's hydration levels. Here are the top foods to include in your diet:
+          '''Food choices are one part of general wellbeing. These examples are not a treatment for dry skin:
 
 **Water-Rich Fruits**
 • Watermelon (92% water) – contains lycopene for skin protection
@@ -60,7 +60,7 @@ Understanding what's causing YOUR dry skin is the first step to fixing it. Pay a
 • Spinach – vitamins A, C, and iron
 • Sweet potatoes – beta-carotene for skin renewal
 • Bell peppers – more vitamin C than oranges
-• Tomatoes – lycopene protects against UV damage
+• Tomatoes – a source of nutrients in a varied diet
 
 **Other Superfoods**
 • Green tea – antioxidants reduce skin aging
@@ -68,7 +68,7 @@ Understanding what's causing YOUR dry skin is the first step to fixing it. Pay a
 • Bone broth – collagen for skin structure
 • Dark chocolate (70%+) – flavonoids improve skin texture
 
-**Tip:** Try to include at least 2-3 skin-hydrating foods in each meal. Your skin will thank you within weeks!''',
+**Tip:** Choose foods that suit your needs and any dietary advice you have received.''',
     ),
     TipArticle(
       title: 'Common Skincare Mistakes',
@@ -110,7 +110,7 @@ Understanding what's causing YOUR dry skin is the first step to fixing it. Pay a
 • Ignoring the importance of sleep
 • Not drinking water consistently
 
-**Fix these habits and you'll notice a significant improvement in your skin's hydration and overall health!**''',
+**Tip:** A gentle routine may improve comfort for some people. Seek professional advice if symptoms persist or worsen.''',
     ),
     TipArticle(
       title: 'Seasonal Skincare Tips',
@@ -158,17 +158,17 @@ Understanding what's causing YOUR dry skin is the first step to fixing it. Pay a
 • Always cleanse gently, morning and night
 • Never skip moisturizer
 • Wear sunscreen daily, regardless of season
-• Stay hydrated (at least 2L water daily)
+• Drink according to your needs and any medical advice you have received
 • Get 7-8 hours of quality sleep
 • Manage stress levels for better skin health''',
     ),
     TipArticle(
       title: 'Building a Night Routine',
-      subtitle: 'Your skin repairs itself while you sleep',
+      subtitle: 'Build a gentle evening routine',
       icon: '🌙',
       category: 'Routine',
       content:
-          '''A proper nighttime skincare routine is crucial for dry skin repair. Your skin regenerates most actively during sleep.
+          '''A gentle nighttime skincare routine may help keep skin comfortable.
 
 **Step 1: Double Cleanse**
 • First, use an oil cleanser or micellar water to remove sunscreen and makeup

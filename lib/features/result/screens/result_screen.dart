@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
+import '../../../core/constants/app_constants.dart';
 
 import '../../../core/providers/app_providers.dart';
 import '../../../core/theme/app_colors.dart';
@@ -70,8 +71,8 @@ class _ResultScreenState extends ConsumerState<ResultScreen>
     final hydration = AppUtils.getHydrationAdvice(widget.score);
     final userName = ref.watch(userNameProvider);
     final personalTitle = userName.isNotEmpty
-        ? '$userName, your skin is:'
-        : 'Your skin dryness level:';
+        ? '$userName, your answers suggest:'
+        : 'Your answers suggest:';
 
     return Scaffold(
       body: GradientBackground(
@@ -123,6 +124,14 @@ class _ResultScreenState extends ConsumerState<ResultScreen>
                   },
                 ),
                 const SizedBox(height: 24),
+
+                GlassCard(
+                  child: Text(
+                    AppConstants.medicalDisclaimer,
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                ),
+                const SizedBox(height: 12),
 
                 // Personalized title
                 Text(

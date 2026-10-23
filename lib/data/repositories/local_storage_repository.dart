@@ -9,8 +9,12 @@ class LocalStorageRepository {
   late Box _dashboardBox;
   late Box _settingsBox;
 
-  Future<void> init() async {
-    await Hive.initFlutter();
+  Future<void> init({String? storagePath}) async {
+    if (storagePath == null) {
+      await Hive.initFlutter();
+    } else {
+      Hive.init(storagePath);
+    }
     _userBox = await Hive.openBox(AppConstants.userBox);
     _dashboardBox = await Hive.openBox(AppConstants.dashboardBox);
     _settingsBox = await Hive.openBox(AppConstants.settingsBox);
@@ -18,7 +22,7 @@ class LocalStorageRepository {
 
   // Onboarding
   bool get isOnboardingCompleted =>
-      _userBox.get(AppConstants.onboardingCompleted, defaultValue: false);
+      _userBox.get(AppConstants.onboardingCompleted) == true;
 
   Future<void> setOnboardingCompleted() async {
     await _userBox.put(AppConstants.onboardingCompleted, true);
@@ -26,7 +30,7 @@ class LocalStorageRepository {
 
   // Questionnaire
   bool get isQuestionnaireCompleted =>
-      _userBox.get(AppConstants.questionnaireCompleted, defaultValue: false);
+      _userBox.get(AppConstants.questionnaireCompleted) == true;
 
   Future<void> saveQuestionnaireResults(int score, List<int> answers) async {
     await _userBox.put(AppConstants.drynessScore, score);
@@ -36,8 +40,10 @@ class LocalStorageRepository {
     await _userBox.put(AppConstants.questionnaireCompleted, true);
   }
 
-  int get drynessScore =>
-      _userBox.get(AppConstants.drynessScore, defaultValue: 0);
+  int get drynessScore {
+    final raw = _userBox.get(AppConstants.drynessScore);
+    return raw is int ? raw.clamp(0, 30) : 0;
+  }
 
   String get drynessLevel =>
       _userBox.get(AppConstants.drynessLevel, defaultValue: 'Unknown');
@@ -45,36 +51,29 @@ class LocalStorageRepository {
   List<int> get questionnaireAnswers {
     final dynamic raw = _userBox.get(AppConstants.questionnaireAnswers);
     if (raw == null) return [];
-    return List<int>.from(raw);
+    if (raw is! List) return [];
+    return raw.whereType<int>().map((value) => value.clamp(0, 3)).toList();
   }
 
   // Dashboard
   DashboardModel getDashboardData() {
-    final waterIntake =
-        _dashboardBox.get(AppConstants.waterIntake, defaultValue: 0) as int;
+    final rawWater =
+        _dashboardBox.get(AppConstants.waterIntake, defaultValue: 0);
+    final waterIntake = rawWater is int ? rawWater.clamp(0, 12) : 0;
 
     final dynamic morningRaw = _dashboardBox.get(AppConstants.morningChecklist);
-    final morningChecklist = morningRaw != null
-        ? List<bool>.from(morningRaw)
-        : List<bool>.filled(5, false);
+    final morningChecklist = _validatedChecklist(morningRaw);
 
     final dynamic nightRaw = _dashboardBox.get(AppConstants.nightChecklist);
-    final nightChecklist = nightRaw != null
-        ? List<bool>.filled(5, false)
-        : List<bool>.filled(5, false);
-    if (nightRaw != null) {
-      final raw = List<bool>.from(nightRaw);
-      for (int i = 0; i < raw.length && i < nightChecklist.length; i++) {
-        nightChecklist[i] = raw[i];
-      }
-    }
+    final nightChecklist = _validatedChecklist(nightRaw);
 
-    final streakCount =
-        _dashboardBox.get(AppConstants.streakCount, defaultValue: 0) as int;
+    final rawStreak =
+        _dashboardBox.get(AppConstants.streakCount, defaultValue: 0);
+    final streakCount = rawStreak is int ? rawStreak.clamp(0, 100000) : 0;
 
     final lastActiveDateStr = _dashboardBox.get(AppConstants.lastActiveDate);
-    final lastActiveDate = lastActiveDateStr != null
-        ? DateTime.parse(lastActiveDateStr)
+    final lastActiveDate = lastActiveDateStr is String
+        ? (DateTime.tryParse(lastActiveDateStr) ?? DateTime.now())
         : DateTime.now();
 
     return DashboardModel(
@@ -84,6 +83,26 @@ class LocalStorageRepository {
       streakCount: streakCount,
       lastActiveDate: lastActiveDate,
     );
+  }
+
+  List<bool> _validatedChecklist(dynamic raw) {
+    final result = List<bool>.filled(5, false);
+    if (raw is List) {
+      for (var i = 0; i < raw.length && i < result.length; i++) {
+        result[i] = raw[i] == true;
+      }
+    }
+    return result;
+  }
+
+  DateTime? get lastRoutineCompletedDate {
+    final value = _dashboardBox.get('last_routine_completed_date');
+    return value is String ? DateTime.tryParse(value) : null;
+  }
+
+  Future<void> saveLastRoutineCompletedDate(DateTime date) async {
+    await _dashboardBox.put(
+        'last_routine_completed_date', date.toIso8601String());
   }
 
   Future<void> saveDashboardData(DashboardModel data) async {
@@ -124,24 +143,22 @@ class LocalStorageRepository {
   }
 
   // Settings
-  bool get isDarkMode =>
-      _settingsBox.get(AppConstants.isDarkMode, defaultValue: false);
+  bool get isDarkMode => _settingsBox.get(AppConstants.isDarkMode) == true;
 
   Future<void> setDarkMode(bool value) async {
     await _settingsBox.put(AppConstants.isDarkMode, value);
   }
 
-  bool get isReminderEnabled =>
-      _settingsBox.get(AppConstants.reminderEnabled, defaultValue: false);
-
-  Future<void> setReminderEnabled(bool value) async {
-    await _settingsBox.put(AppConstants.reminderEnabled, value);
+  // User profile
+  String get userName {
+    final raw = _userBox.get(AppConstants.userName);
+    return raw is String ? raw : '';
   }
 
-  // User profile
-  String get userName => _userBox.get(AppConstants.userName, defaultValue: '');
-
-  int get userAge => _userBox.get(AppConstants.userAge, defaultValue: 0);
+  int get userAge {
+    final raw = _userBox.get(AppConstants.userAge);
+    return raw is int ? raw.clamp(0, 120) : 0;
+  }
 
   Future<void> saveUserProfile(String name, int age) async {
     await _userBox.put(AppConstants.userName, name);
@@ -152,6 +169,6 @@ class LocalStorageRepository {
   Future<void> resetAllData() async {
     await _userBox.clear();
     await _dashboardBox.clear();
-    // Keep settings
+    await _settingsBox.clear();
   }
 }

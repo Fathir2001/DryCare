@@ -23,7 +23,6 @@ class AppConstants {
   static const String streakCount = 'streak_count';
   static const String lastActiveDate = 'last_active_date';
   static const String isDarkMode = 'is_dark_mode';
-  static const String reminderEnabled = 'reminder_enabled';
   static const String userName = 'user_name';
   static const String userAge = 'user_age';
 
@@ -34,16 +33,9 @@ class AppConstants {
 
   // Disclaimer
   static const String medicalDisclaimer =
-      'DryCare provides general skincare guidance only and is not a medical diagnosis. '
-      'Always consult with a qualified healthcare professional or dermatologist '
-      'for medical advice.';
+      'DryCare is a general skincare and wellness guide. Its questionnaire is based only on your answers; it does not diagnose, measure clinical severity, or treat a condition. Seek advice from a qualified healthcare professional for persistent or worsening dryness, painful cracks, bleeding, signs of infection, or other concerning symptoms. Follow any personal medical advice about fluid intake.';
 
   // Privacy
   static const String privacyPolicy =
-      'DryCare is committed to protecting your privacy. All data is stored locally '
-      'on your device and is never transmitted to any external servers. '
-      'We do not collect, store, or share any personal information. '
-      'Your skincare assessment data, daily tracking information, and preferences '
-      'remain entirely on your device. You can delete all your data at any time '
-      'from the Settings screen.';
+      'DryCare stores the name and age you enter, questionnaire answers and score, daily water and routine records, streak, and preferences in local storage on this device. It has no account, advertising, analytics, or app backend. The app does not intentionally upload your entries. Font loading and final release network behavior should be verified before claiming that no data leaves the device. Android backup is disabled. Reset All Data erases the app\'s local records and preferences. Uninstalling the app also removes its local data. Contact information and the published policy URL will be supplied in the Play listing.';
 }

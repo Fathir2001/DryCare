@@ -5,9 +5,9 @@ class AppUtils {
   AppUtils._();
 
   static String getDrynessLevel(int score) {
-    if (score <= 8) return 'Mild Dryness';
-    if (score <= 18) return 'Moderate Dryness';
-    return 'Severe Dryness';
+    if (score <= 8) return 'Few reported dryness signs';
+    if (score <= 18) return 'Some reported dryness signs';
+    return 'More reported dryness signs';
   }
 
   static Color getDrynessColor(int score) {
@@ -24,12 +24,12 @@ class AppUtils {
 
   static String getDrynessExplanation(int score) {
     if (score <= 8) {
-      return 'Your skin shows mild signs of dryness. With a few simple adjustments to your routine, you can keep your skin healthy and hydrated!';
+      return 'Your answers suggest fewer dryness-related concerns. This self-reported guide cannot assess or diagnose a skin condition.';
     }
     if (score <= 18) {
-      return 'Your skin is showing moderate dryness. It\'s important to give your skin extra attention with proper hydration and moisturizing routines.';
+      return 'Your answers suggest some dryness-related concerns. Consider a gentle routine and seek professional advice if symptoms persist.';
     }
-    return 'Your skin appears to be significantly dry and may need special care. A consistent skincare routine with rich moisturizers and lifestyle changes can make a big difference.';
+    return 'Your answers suggest several dryness-related concerns. Consider speaking with a dermatologist, especially if symptoms persist, worsen, or cause discomfort.';
   }
 
   static String getMotivationalMessage(int score) {
@@ -37,7 +37,7 @@ class AppUtils {
       return '✨ Great job! You\'re already taking good care of your skin. Keep it up!';
     }
     if (score <= 18) {
-      return '💪 Don\'t worry! With the right routine, your skin will improve. Let\'s start your journey!';
+      return 'A gentle routine may help you feel more comfortable. Start with steps that suit your skin.';
     }
     return '🌟 Every journey starts with a single step. We\'re here to help you achieve healthier, more comfortable skin!';
   }
@@ -48,7 +48,7 @@ class AppUtils {
         'Use a gentle, hydrating cleanser morning and night',
         'Apply lightweight moisturizer after cleansing',
         'Use SPF 30+ sunscreen daily',
-        'Drink at least 2L of water daily',
+        'Drink according to your needs and any medical advice you have received',
         'Use a hydrating mist throughout the day',
       ];
     }
@@ -60,7 +60,7 @@ class AppUtils {
         'Apply SPF 30+ sunscreen every morning',
         'Use a humidifier in dry environments',
         'Avoid hot water when washing your face',
-        'Drink at least 2L of water daily',
+        'Drink according to your needs and any medical advice you have received',
       ];
     }
     return [
@@ -72,7 +72,7 @@ class AppUtils {
       'Use a sleeping mask 2-3 times per week',
       'Strictly avoid hot water on your face',
       'Run a humidifier while sleeping',
-      'Increase water intake to 2.5L+ daily',
+      'Drink according to your needs and any medical advice you have received',
       'Add omega-3 rich foods to your diet',
     ];
   }
@@ -82,12 +82,12 @@ class AppUtils {
       return [
         'Maintain your good water intake habits',
         'Eat water-rich fruits like watermelon and cucumber',
-        'Limit caffeine to 2 cups per day',
+        'Notice whether any drinks affect your comfort',
       ];
     }
     if (score <= 18) {
       return [
-        'Set hourly water reminders',
+        'Keep water available when you need it',
         'Start your morning with a glass of warm water',
         'Include hydrating foods: cucumbers, berries, oranges',
         'Reduce alcohol and excessive caffeine',
@@ -95,11 +95,11 @@ class AppUtils {
       ];
     }
     return [
-      'Drink water consistently throughout the day (2.5L+)',
+      'Drink according to your needs and any medical advice you have received',
       'Start every meal with a glass of water',
       'Eat plenty of water-rich foods daily',
       'Avoid dehydrating beverages (alcohol, excess caffeine)',
-      'Add electrolytes to water for better absorption',
+      'Ask a professional if you have questions about hydration',
       'Track your water intake daily',
       'Keep a water bottle with you at all times',
     ];

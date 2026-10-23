@@ -1,0 +1,6 @@
+# Copy to android/key.properties and fill in values locally.
+# Keep the keystore outside this repository. storeFile may be an absolute path.
+storeFile=C:/secure-location/drycare-upload.jks
+storePassword=REPLACE_LOCALLY
+keyAlias=drycare-upload
+keyPassword=REPLACE_LOCALLY

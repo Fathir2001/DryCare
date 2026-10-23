@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../core/constants/app_constants.dart';
 
 import '../../../core/providers/app_providers.dart';
 import '../../../core/theme/app_colors.dart';
@@ -51,15 +52,15 @@ class _QuestionnaireScreenState extends ConsumerState<QuestionnaireScreen>
 
   // ── Fun facts shown after answering each question ──
   static const List<String> _funFacts = [
-    '💡 Hot water strips natural oils from your skin in just 10 minutes!',
+    '💡 Lukewarm water may feel gentler on dry skin.',
     '💡 Your skin sheds about 30,000+ dead cells every single hour!',
     '💡 Scratching dry skin causes micro-tears that worsen dryness!',
-    '💡 Your skin is 64% water – hydration keeps it plump & glowing!',
+    '💡 A gentle moisturizer can help skin feel more comfortable.',
     '💡 Moisturizing within 60s of bathing locks in 10× more moisture!',
-    '💡 Hot showers damage your skin barrier in as little as 5 minutes!',
+    '💡 Shorter, lukewarm showers may help reduce dryness.',
     '💡 Cold air holds 50% less moisture – that\'s why winter skin is drier!',
     '💡 UV rays penetrate clouds & windows – daily SPF is a must!',
-    '💡 Skin repairs itself during deep sleep – beauty sleep is real!',
+    '💡 Sleep is one part of general wellbeing.',
     '💡 Cucumbers are 96% water – nature\'s best hydrating snack!',
   ];
 
@@ -244,6 +245,7 @@ class _QuestionnaireScreenState extends ConsumerState<QuestionnaireScreen>
   }
 
   Future<void> _submitAnswers() async {
+    if (_answers.any((answer) => answer < 0)) return;
     final totalScore = _answers.reduce((a, b) => a + b);
     final repo = ref.read(localStorageProvider);
     await repo.saveQuestionnaireResults(totalScore, _answers);
@@ -369,6 +371,15 @@ class _QuestionnaireScreenState extends ConsumerState<QuestionnaireScreen>
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 8),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        child: Text(
+                          AppConstants.medicalDisclaimer,
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
                       Text(
                         'Tell us a little about yourself so we can\npersonalize your experience ✨',
                         style: TextStyle(

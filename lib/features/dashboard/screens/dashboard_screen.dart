@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -20,7 +21,8 @@ class DashboardScreen extends ConsumerStatefulWidget {
 }
 
 class _DashboardScreenState extends ConsumerState<DashboardScreen>
-    with TickerProviderStateMixin {
+    with TickerProviderStateMixin, WidgetsBindingObserver {
+  Timer? _dayTimer;
   int _currentIndex = 0;
   late PageController _pageController;
   late AnimationController _pulseController;
@@ -67,6 +69,10 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _dayTimer = Timer.periodic(const Duration(minutes: 1), (_) {
+      ref.read(dashboardProvider.notifier).checkDayReset();
+    });
     _pageController = PageController();
 
     // Pulsing animation for score circle
@@ -82,9 +88,18 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
 
   @override
   void dispose() {
+    _dayTimer?.cancel();
+    WidgetsBinding.instance.removeObserver(this);
     _pageController.dispose();
     _pulseController.dispose();
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      ref.read(dashboardProvider.notifier).checkDayReset();
+    }
   }
 
   void _onPageChanged(int index) {
@@ -101,7 +116,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
   }
 
   void _checkScoreImprovement(int newScore) {
-    if (_previousScore != null && newScore > _previousScore! + 5) {
+    if (_previousScore != null && newScore < _previousScore! - 5) {
       setState(() => _showConfetti = true);
       Future.delayed(const Duration(seconds: 3), () {
         if (mounted) setState(() => _showConfetti = false);

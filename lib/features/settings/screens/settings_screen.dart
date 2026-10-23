@@ -6,6 +6,7 @@ import '../../../core/providers/app_providers.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../shared/widgets/glass_card.dart';
 import '../../onboarding/screens/onboarding_screen.dart';
+import '../../questionnaire/screens/questionnaire_screen.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -336,7 +337,7 @@ class SettingsScreen extends ConsumerWidget {
           style: Theme.of(context).textTheme.headlineMedium,
         ),
         content: Text(
-          'This will clear your questionnaire results, daily tracking data, and streak. This action cannot be undone.',
+          'This will erase your profile, questionnaire results, daily tracking data, streak, and preferences. This action cannot be undone.',
           style: Theme.of(context).textTheme.bodyMedium,
         ),
         actions: [
@@ -359,6 +360,10 @@ class SettingsScreen extends ConsumerWidget {
               ref.read(onboardingCompletedProvider.notifier).state = false;
               ref.read(questionnaireCompletedProvider.notifier).state = false;
               ref.read(drynessScoreProvider.notifier).state = 0;
+              ref.read(userNameProvider.notifier).state = '';
+              ref.read(userAgeProvider.notifier).state = 0;
+              ref.invalidate(dashboardProvider);
+              ref.invalidate(themeProvider);
 
               if (context.mounted) {
                 Navigator.of(context).pushAndRemoveUntil(
@@ -416,7 +421,7 @@ class SettingsScreen extends ConsumerWidget {
               Navigator.pop(ctx);
               Navigator.of(context).push(
                 MaterialPageRoute(
-                  builder: (_) => const OnboardingScreen(),
+                  builder: (_) => const QuestionnaireScreen(),
                 ),
               );
             },
